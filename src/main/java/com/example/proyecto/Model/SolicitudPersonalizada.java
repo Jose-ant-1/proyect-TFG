@@ -42,7 +42,7 @@ public class SolicitudPersonalizada {
 
     private String acabado;
     private boolean urgente;
-    private String estado; // "pendiente", "presupuestado", etc. [cite: 37, 38]
+    private String estado; // "pendiente", "presupuestado"
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_solicitud")

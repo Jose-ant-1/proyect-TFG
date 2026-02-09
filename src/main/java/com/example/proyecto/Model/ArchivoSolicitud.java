@@ -40,5 +40,4 @@ public class ArchivoSolicitud {
     @Column(name = "fecha_subida")
     private Date fechaSubida;
 
-    // Constructores, Getters y Setters
 }

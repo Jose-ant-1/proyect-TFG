@@ -46,5 +46,4 @@ public class Materiales {
     @Column(name = "fecha_creacion")
     private Date fechaCreacion;
 
-    // Constructores, Getters y Setters
 }

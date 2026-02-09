@@ -61,5 +61,4 @@ public class ProductoPredisenyado {
     @Column(name = "fecha_actualizacion")
     private Date fechaActualizacion;
 
-    // Getters y Setters
 }

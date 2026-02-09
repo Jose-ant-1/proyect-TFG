@@ -7,17 +7,31 @@ import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-@Getter
-@Setter
+@Data // incluye Getter, Setter, Equals, HashCode y ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
-@Table(name = "valoraciones")
+@Table(
+        name = "valoraciones",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"id_usuario", "id_producto"})
+        }
+)
 public class Valoraciones {
 
-    @EmbeddedId
-    private ValoracionId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    // En lugar de: private int idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
+    private Usuario usuario;
+
+    // En lugar de: private int idProducto;
+    @ManyToOne
+    @JoinColumn(name = "id_producto", insertable = false, updatable = false)
+    private ProductoPredisenyado producto;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_valoracion")
@@ -27,17 +41,4 @@ public class Valoraciones {
 
     @Column(columnDefinition = "TEXT")
     private String comentario;
-
-    // Clase interna para la clave compuesta
-    @Embeddable
-    public static class ValoracionId implements Serializable {
-        @Column(name = "id_usuario")
-        private int idUsuario;
-        @Column(name = "id_producto")
-        private int idProducto;
-
-        // Necesario implementar hashCode() y equals()
-    }
-
-    // Getters y Setters
 }

@@ -51,5 +51,4 @@ public class Pago {
     @Column(name = "fecha_creacion")
     private Date fechaCreacion;
 
-    // Constructores, Getters y Setters
 }

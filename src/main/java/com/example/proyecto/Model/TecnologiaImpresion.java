@@ -28,5 +28,4 @@ public class TecnologiaImpresion {
 
     private boolean disponible;
 
-    // Getters y Setters
 }

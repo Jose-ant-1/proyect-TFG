@@ -48,5 +48,4 @@ public class Pedido {
     @Column(name = "fecha_actualizacion")
     private Date fecha_actualizacion;
 
-    // Getters y Setters
 }
