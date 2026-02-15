@@ -1,7 +1,7 @@
-package com.example.proyecto.service;
+package com.example.proyecto.Service;
 
 import com.example.proyecto.Model.Pago;
-import com.example.proyecto.repository.PagoRepository;
+import com.example.proyecto.Repository.PagoRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

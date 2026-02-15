@@ -1,8 +1,9 @@
-package com.example.proyecto.service;
+package com.example.proyecto.Service;
 
 import com.example.proyecto.Model.ArchivoSolicitud;
-import com.example.proyecto.repository.ArchivoSolicitudRepository;
+import com.example.proyecto.Repository.ArchivoSolicitudRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

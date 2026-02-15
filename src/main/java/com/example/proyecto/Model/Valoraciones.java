@@ -2,12 +2,10 @@ package com.example.proyecto.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-@Data // incluye Getter, Setter, Equals, HashCode y ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,12 +21,19 @@ public class Valoraciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // En lugar de: private int idUsuario;
+    // CAMPOS PARA LA BASE DE DATOS (ESCRITURA)
+    @Column(name = "id_usuario")
+    private int idUsuario;
+
+    @Column(name = "id_producto")
+    private int idProducto;
+
+    // RELACIONES PARA JAVA (LECTURA)
+    // Usamos updatable=false e insertable=false porque ya usamos los campos de arriba
     @ManyToOne
     @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
     private Usuario usuario;
 
-    // En lugar de: private int idProducto;
     @ManyToOne
     @JoinColumn(name = "id_producto", insertable = false, updatable = false)
     private ProductoPredisenyado producto;

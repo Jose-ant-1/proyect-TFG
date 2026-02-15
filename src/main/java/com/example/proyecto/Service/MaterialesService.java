@@ -1,7 +1,7 @@
-package com.example.proyecto.service;
+package com.example.proyecto.Service;
 
 import com.example.proyecto.Model.Materiales;
-import com.example.proyecto.repository.MaterialesRepository;
+import com.example.proyecto.Repository.MaterialesRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

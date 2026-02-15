@@ -1,4 +1,4 @@
-package com.example.proyecto.repository;
+package com.example.proyecto.Repository;
 
 import com.example.proyecto.Model.ArchivoSolicitud;
 import org.springframework.data.jpa.repository.JpaRepository;
