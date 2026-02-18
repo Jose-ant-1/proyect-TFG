@@ -3,7 +3,7 @@ package com.example.proyecto.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -55,10 +55,10 @@ public class ProductoPredisenyado {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_creacion")
-    private Date fechaCreacion;
+    private LocalDate fechaCreacion;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_actualizacion")
-    private Date fechaActualizacion;
+    private LocalDate fechaActualizacion;
 
 }

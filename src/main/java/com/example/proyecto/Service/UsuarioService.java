@@ -5,6 +5,7 @@ import com.example.proyecto.Repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -29,5 +30,8 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
+    public Optional<Usuario> findByEmail(String email) {
+            return usuarioRepository.findByEmail(email);
+    }
 
 }

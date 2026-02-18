@@ -3,7 +3,7 @@ package com.example.proyecto.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -46,10 +46,10 @@ public class SolicitudPersonalizada {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_solicitud")
-    private Date fechaSolicitud;
+    private LocalDate fechaSolicitud;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_actualizacion")
-    private Date fechaActualizacion;
+    private LocalDate fechaActualizacion;
 
 }

@@ -2,7 +2,7 @@ package com.example.proyecto.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -40,7 +40,7 @@ public class Valoraciones {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_valoracion")
-    private Date fechaValoracion;
+    private LocalDate fechaValoracion;
 
     private int puntuacion;
 
