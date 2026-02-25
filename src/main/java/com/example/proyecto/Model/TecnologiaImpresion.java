@@ -1,7 +1,10 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -27,5 +30,16 @@ public class TecnologiaImpresion {
     private String especificacion;
 
     private boolean disponible;
+
+    @OneToMany(mappedBy = "tecnologia")
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<ProductoPredisenyado> productos;
+
+    @OneToMany(mappedBy = "tecnologia")
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<SolicitudPersonalizada> solicitudes;
+
 
 }

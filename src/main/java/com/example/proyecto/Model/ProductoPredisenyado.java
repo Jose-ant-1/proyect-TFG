@@ -1,17 +1,16 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
 @Table(name = "productos_predisenyados")
 public class ProductoPredisenyado {
 
@@ -20,13 +19,15 @@ public class ProductoPredisenyado {
     private int id;
 
     @Column(name = "id_categoria")
-    private int idCategoria;
+    private int idCategoria; // Si creas la entidad Categoria, cámbialo a @ManyToOne
 
-    @Column(name = "id_material")
-    private int idMaterial;
+    @ManyToOne
+    @JoinColumn(name = "id_material")
+    private Materiales material;
 
-    @Column(name = "id_tecnologia")
-    private int idTecnologia;
+    @ManyToOne
+    @JoinColumn(name = "id_tecnologia")
+    private TecnologiaImpresion tecnologia;
 
     @Column(name = "nombre_producto", nullable = false)
     private String nombreProducto;
@@ -53,12 +54,14 @@ public class ProductoPredisenyado {
     private boolean destacado;
     private boolean disponible;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_actualizacion")
     private LocalDate fechaActualizacion;
 
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Valoraciones> valoraciones;
 }

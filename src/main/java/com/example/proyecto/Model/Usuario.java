@@ -1,9 +1,11 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -37,12 +39,24 @@ public class Usuario {
     private String rol; // Podría ser un Enum (ADMIN, CLIENTE)
     private String estado;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "fecha_registro")
-    private LocalDate fechaRegistro;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Pedido> pedidos;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "fecha_actualizacion")
-    private LocalDate fechaActualizacion;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<SolicitudPersonalizada> solicitudes;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Pago> pagos;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Valoraciones> valoraciones;
 
 }

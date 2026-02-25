@@ -1,9 +1,11 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -42,8 +44,17 @@ public class Materiales {
 
     private boolean disponible;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
+
+    @OneToMany(mappedBy = "material")
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<ProductoPredisenyado> productos;
+
+    @OneToMany(mappedBy = "material")
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<SolicitudPersonalizada> solicitudes;
 
 }

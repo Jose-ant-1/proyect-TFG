@@ -1,17 +1,14 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
 @Table(name = "pagos")
 public class Pago {
 
@@ -19,14 +16,18 @@ public class Pago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "id_usuario")
-    private int idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    @JsonIgnore
+    private Usuario usuario;
 
-    @Column(name = "id_pedido")
-    private int idPedido;
+    @ManyToOne
+    @JoinColumn(name = "id_pedido")
+    private Pedido pedido; // Opcional si el pago es de una solicitud
 
-    @Column(name = "id_solicitud")
-    private int idSolicitud;
+    @ManyToOne
+    @JoinColumn(name = "id_solicitud")
+    private SolicitudPersonalizada solicitud; // Opcional si el pago es de un pedido
 
     @Column(nullable = false)
     private double importe;
@@ -43,12 +44,9 @@ public class Pago {
     @Column(columnDefinition = "TEXT")
     private String detalles;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_pago")
     private LocalDate fechaPago;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
-
 }

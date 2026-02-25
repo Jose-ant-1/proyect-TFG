@@ -1,17 +1,16 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
 @Table(name = "pedidos")
 public class Pedido {
 
@@ -19,8 +18,9 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPedido;
 
-    @Column(name = "id_usuario")
-    private int idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @Column(name = "numero_pedido", unique = true, nullable = false)
     private String numeroPedido;
@@ -32,7 +32,7 @@ public class Pedido {
 
     private double total;
 
-    private String estado;
+    private String estado; // "pendiente de pago", "pagado", etc. [cite: 34, 47]
 
     @Column(name = "direccion_envio")
     private String direccionEnvio;
@@ -40,12 +40,20 @@ public class Pedido {
     @Column(name = "nota_cliente", columnDefinition = "TEXT")
     private String notaCliente;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_pedido")
     private LocalDate fechaPedido;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_actualizacion")
     private LocalDate fecha_actualizacion;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Pago> pagos;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private Set<ItemPedido> items;
+
 
 }

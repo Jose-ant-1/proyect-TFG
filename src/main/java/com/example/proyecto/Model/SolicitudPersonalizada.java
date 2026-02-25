@@ -1,17 +1,16 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder @ToString
 @Table(name = "solicitudes_personalizadas")
 public class SolicitudPersonalizada {
 
@@ -19,8 +18,9 @@ public class SolicitudPersonalizada {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "id_usuario")
-    private int idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @Column(name = "numero_solicitud", unique = true, nullable = false)
     private String numeroSolicitud;
@@ -28,11 +28,13 @@ public class SolicitudPersonalizada {
     @Column(name = "tipo_servicio")
     private String tipoServicio;
 
-    @Column(name = "id_material")
-    private int idMaterial;
+    @ManyToOne
+    @JoinColumn(name = "id_material")
+    private Materiales material;
 
-    @Column(name = "id_tecnologia")
-    private int idTecnologia;
+    @ManyToOne
+    @JoinColumn(name = "id_tecnologia")
+    private TecnologiaImpresion tecnologia;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;
@@ -44,12 +46,22 @@ public class SolicitudPersonalizada {
     private boolean urgente;
     private String estado; // "pendiente", "presupuestado"
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_solicitud")
     private LocalDate fechaSolicitud;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_actualizacion")
     private LocalDate fechaActualizacion;
+
+    // ... (campos ManyToOne usuario, material, tecno igual)
+
+    @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<ArchivoSolicitud> archivos;
+
+    @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Pago> pagos;
 
 }

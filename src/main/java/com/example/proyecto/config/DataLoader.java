@@ -5,7 +5,6 @@ import com.example.proyecto.Repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
-import java.sql.Date;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -19,12 +18,14 @@ public class DataLoader implements CommandLineRunner {
     private final SolicitudPersoRepository solRepo;
     private final ArchivoSolicitudRepository archivoRepo;
     private final ValoracionesRepository valorRepo;
+    // NUEVO: Necesitamos el repositorio para los ítems
+    private final ItemPedidoRepository itemPedidoRepo;
 
     public DataLoader(UsuarioRepository usuarioRepo, TecnoImpreRepository tecnoRepo,
                       MaterialesRepository matRepo, ProdPrediRepository prodRepo,
                       PedidoRepository pedidoRepo, PagoRepository pagoRepo,
                       SolicitudPersoRepository solRepo, ArchivoSolicitudRepository archivoRepo,
-                      ValoracionesRepository valorRepo) {
+                      ValoracionesRepository valorRepo, ItemPedidoRepository itemPedidoRepo) {
         this.usuarioRepo = usuarioRepo;
         this.tecnoRepo = tecnoRepo;
         this.matRepo = matRepo;
@@ -34,31 +35,29 @@ public class DataLoader implements CommandLineRunner {
         this.solRepo = solRepo;
         this.archivoRepo = archivoRepo;
         this.valorRepo = valorRepo;
+        this.itemPedidoRepo = itemPedidoRepo;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
-        // Limpiamos o comprobamos para evitar el error de "Duplicate Entry"
         if (usuarioRepo.findByEmail("admin@tienda3d.com").isPresent()) {
             System.out.println(">> Datos ya existentes. Saltando carga...");
             return;
         }
 
-        // 1. USUARIO (Rellenando TODO)
+        // 1. USUARIO
         Usuario admin = Usuario.builder()
                 .nombre("Admin")
                 .apellidos("García Pérez")
                 .email("admin@tienda3d.com")
-                .contrasenia("1234")
+                .contrasenia("1234") // Nota: En producción esto iría encriptado
                 .telefono("600123456")
                 .direccion("Calle Mayor 1")
                 .ciudad("Madrid")
                 .codigoPostal(28001)
                 .rol("ADMIN")
                 .estado("ACTIVO")
-                .fechaRegistro(LocalDate.now())
-                .fechaActualizacion(LocalDate.now())
                 .build();
         usuarioRepo.save(admin);
 
@@ -93,72 +92,82 @@ public class DataLoader implements CommandLineRunner {
                 .stockDisponible(15)
                 .dimensiones("15x10x5 cm")
                 .pesoGramos(120)
-                .tiempoImpresionMinutos(480)
-                .caracteristicas("Articulado, No requiere soportes")
+                .tecnologia(fdm)
+                .material(pla)
                 .destacado(true)
                 .disponible(true)
-                .idMaterial(pla.getId())
-                .idTecnologia(fdm.getId())
                 .fechaCreacion(LocalDate.now())
                 .build();
         prodRepo.save(figura);
 
-        // 5. PEDIDO (Importante: numeroPedido no puede ser null)
+        // 5. PEDIDO (Cabecera)
         Pedido pedido1 = Pedido.builder()
-                .idUsuario(admin.getId())
+                .usuario(admin)
                 .numeroPedido("PED-2024-0001")
                 .subtotal(25.99)
                 .gastosEnvio(4.95)
                 .total(30.94)
                 .estado("COMPLETADO")
                 .direccionEnvio("Calle Mayor 1, Madrid")
-                .notaCliente("Entregar por la tarde")
                 .fechaPedido(LocalDate.now())
                 .fecha_actualizacion(LocalDate.now())
                 .build();
         pedidoRepo.save(pedido1);
 
-        // 6. PAGO
+        // 6. ITEM PEDIDO (¡IMPORTANTE! Vincula el producto con el pedido)
+        ItemPedido linea1 = ItemPedido.builder()
+                .pedido(pedido1)
+                .producto(figura)
+                .cantidad(1)
+                .precioUnitario(25.99)
+                .build();
+        itemPedidoRepo.save(linea1);
+
+        // 7. PAGO
         Pago pago1 = Pago.builder()
-                .idUsuario(admin.getId())
-                .idPedido(pedido1.getIdPedido())
+                .usuario(admin)
+                .pedido(pedido1)
                 .importe(30.94)
                 .metodoPago("TARJETA")
                 .estadoPago("COMPLETADO")
-                .idTransaccion("TXN-99887766") // único
-                .detalles("Pago procesado por Stripe")
+                .idTransaccion("TXN-99887766")
                 .fechaPago(LocalDate.now())
-                .fechaCreacion(LocalDate.now())
+                // .fechaCreacion(LocalDate.now()) // Revisa si Pago.java tiene este campo, si no, bórralo
                 .build();
         pagoRepo.save(pago1);
 
-        // 7. SOLICITUD PERSONALIZADA
+        // 8. SOLICITUD PERSONALIZADA
         SolicitudPersonalizada sol1 = SolicitudPersonalizada.builder()
-                .idUsuario(admin.getId())
+                .usuario(admin)
                 .numeroSolicitud("SOL-CUSTOM-001")
                 .tipoServicio("Prototipado")
-                .idMaterial(pla.getId())
-                .idTecnologia(fdm.getId())
+                .material(pla)
+                .tecnologia(fdm)
                 .descripcion("Pieza mecánica para motor")
-                .requisitosEspeciales("Resistencia a vibraciones")
-                .acabado("Lijado suave")
-                .urgente(true)
                 .estado("pendiente")
                 .fechaSolicitud(LocalDate.now())
-                .fechaActualizacion(LocalDate.now())
                 .build();
         solRepo.save(sol1);
 
-        // 8. VALORACIÓN
+        // 9. ARCHIVO SOLICITUD
+        ArchivoSolicitud archivo1 = ArchivoSolicitud.builder()
+                .solicitud(sol1)
+                .nombreArchivo("motor_v8.stl")
+                .url("http://storage.com/motor_v8.stl")
+                .fechaSubida(LocalDate.now())
+                .build();
+        archivoRepo.save(archivo1);
+
+        // 10. VALORACIÓN
         Valoraciones val1 = Valoraciones.builder()
-                .idUsuario(admin.getId())
-                .idProducto(figura.getId())
+                .usuario(admin)
+                .producto(figura)
                 .puntuacion(5)
-                .comentario("Excelente acabado, el color rojo es muy vibrante.")
+                .comentario("Excelente acabado.")
                 .fechaValoracion(LocalDate.now())
                 .build();
         valorRepo.save(val1);
 
-        System.out.println(">> DataLoader: ¡Base de datos cargada al 100% sin nulos!");
+        System.out.println(">> DataLoader: ¡Base de datos cargada correctamente!");
     }
 }

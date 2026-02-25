@@ -1,11 +1,12 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Data
+@Getter @Setter // Cambiado de @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,25 +22,18 @@ public class Valoraciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // CAMPOS PARA LA BASE DE DATOS (ESCRITURA)
-    @Column(name = "id_usuario")
-    private int idUsuario;
+    // Eliminados los int idUsuario e int idProducto
 
-    @Column(name = "id_producto")
-    private int idProducto;
-
-    // RELACIONES PARA JAVA (LECTURA)
-    // Usamos updatable=false e insertable=false porque ya usamos los campos de arriba
     @ManyToOne
-    @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
+    @JoinColumn(name = "id_usuario") // Eliminado insertable/updatable = false
+    @JsonIgnore // Mantenemos el ignore para que no cargue el usuario al ver una valoración
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", insertable = false, updatable = false)
+    @JoinColumn(name = "id_producto") // Eliminado insertable/updatable = false
     private ProductoPredisenyado producto;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "fecha_valoracion")
+    @Column(name = "fecha_valoracion") // Eliminado @Temporal obsoleto
     private LocalDate fechaValoracion;
 
     private int puntuacion;
