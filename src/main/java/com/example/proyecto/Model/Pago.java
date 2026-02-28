@@ -23,6 +23,7 @@ public class Pago {
 
     @ManyToOne
     @JoinColumn(name = "id_pedido")
+    @JsonIgnore
     private Pedido pedido; // Opcional si el pago es de una solicitud
 
     @ManyToOne

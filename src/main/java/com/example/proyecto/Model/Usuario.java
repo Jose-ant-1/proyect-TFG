@@ -3,8 +3,12 @@ package com.example.proyecto.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,7 +19,7 @@ import java.util.Set;
 @Builder
 @ToString
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,5 +62,27 @@ public class Usuario {
     @ToString.Exclude
     @JsonIgnore
     private Set<Valoraciones> valoraciones;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Convierte tu String "rol" (ej: ADMIN) en una autoridad de Spring
+        // Es importante que el prefijo sea ROLE_ si usas hasRole en la config
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.rol));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.contrasenia;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Usaremos el email para el login
+    }
+
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return "ACTIVO".equals(this.estado); }
 
 }

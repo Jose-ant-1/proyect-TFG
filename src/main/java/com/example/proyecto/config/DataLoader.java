@@ -3,6 +3,7 @@ package com.example.proyecto.config;
 import com.example.proyecto.Model.*;
 import com.example.proyecto.Repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
@@ -20,12 +21,13 @@ public class DataLoader implements CommandLineRunner {
     private final ValoracionesRepository valorRepo;
     // NUEVO: Necesitamos el repositorio para los ítems
     private final ItemPedidoRepository itemPedidoRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public DataLoader(UsuarioRepository usuarioRepo, TecnoImpreRepository tecnoRepo,
                       MaterialesRepository matRepo, ProdPrediRepository prodRepo,
                       PedidoRepository pedidoRepo, PagoRepository pagoRepo,
                       SolicitudPersoRepository solRepo, ArchivoSolicitudRepository archivoRepo,
-                      ValoracionesRepository valorRepo, ItemPedidoRepository itemPedidoRepo) {
+                      ValoracionesRepository valorRepo, ItemPedidoRepository itemPedidoRepo, PasswordEncoder passwordEncoder) {
         this.usuarioRepo = usuarioRepo;
         this.tecnoRepo = tecnoRepo;
         this.matRepo = matRepo;
@@ -36,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
         this.archivoRepo = archivoRepo;
         this.valorRepo = valorRepo;
         this.itemPedidoRepo = itemPedidoRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
                 .nombre("Admin")
                 .apellidos("García Pérez")
                 .email("admin@tienda3d.com")
-                .contrasenia("1234") // Nota: En producción esto iría encriptado
+                .contrasenia(passwordEncoder.encode("1234")) // Nota: En producción esto iría encriptado
                 .telefono("600123456")
                 .direccion("Calle Mayor 1")
                 .ciudad("Madrid")
