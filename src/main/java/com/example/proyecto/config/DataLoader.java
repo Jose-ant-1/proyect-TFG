@@ -2,6 +2,7 @@ package com.example.proyecto.config;
 
 import com.example.proyecto.Model.*;
 import com.example.proyecto.Repository.*;
+import com.example.proyecto.Service.UsuarioService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private final UsuarioRepository usuarioRepo;
+    private final UsuarioService usuarioRepo;
     private final TecnoImpreRepository tecnoRepo;
     private final MaterialesRepository matRepo;
     private final ProdPrediRepository prodRepo;
@@ -23,7 +24,7 @@ public class DataLoader implements CommandLineRunner {
     private final ItemPedidoRepository itemPedidoRepo;
     private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(UsuarioRepository usuarioRepo, TecnoImpreRepository tecnoRepo,
+    public DataLoader(UsuarioService usuarioRepo, TecnoImpreRepository tecnoRepo,
                       MaterialesRepository matRepo, ProdPrediRepository prodRepo,
                       PedidoRepository pedidoRepo, PagoRepository pagoRepo,
                       SolicitudPersoRepository solRepo, ArchivoSolicitudRepository archivoRepo,
@@ -45,16 +46,17 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         if (usuarioRepo.findByEmail("admin@tienda3d.com").isPresent()) {
-            System.out.println(">> Datos ya existentes. Saltando carga...");
+            // System.out.println(">> Datos ya existentes. Saltando carga...");
             return;
         }
+
 
         // 1. USUARIO
         Usuario admin = Usuario.builder()
                 .nombre("Admin")
                 .apellidos("García Pérez")
                 .email("admin@tienda3d.com")
-                .contrasenia(passwordEncoder.encode("1234")) // Nota: En producción esto iría encriptado
+                .contrasenia("1234") // Nota: En producción esto iría encriptado
                 .telefono("600123456")
                 .direccion("Calle Mayor 1")
                 .ciudad("Madrid")
