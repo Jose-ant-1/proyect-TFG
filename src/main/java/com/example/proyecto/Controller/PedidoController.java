@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos")
-@CrossOrigin(origins = "*") // Permite peticiones desde el Frontend en React/Angular/Vue
+
 public class PedidoController {
 
     @Autowired

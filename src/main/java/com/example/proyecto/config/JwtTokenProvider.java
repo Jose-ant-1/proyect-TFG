@@ -3,6 +3,8 @@ package com.example.proyecto.config;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -12,6 +14,8 @@ public class JwtTokenProvider {
     // Clave secreta para firmar el token (en producción iría en application.properties)
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private final long jwtExpirationInMs = 3600000; // 1 hora
+    // Usa una cadena fija y larga. Si es aleatoria por cada reinicio, el 401 es inevitable.
+    private final String jwtSecret = "ClaveSuperSecretaDeAlMenos64CaracteresParaQueFuncioneElAlgoritmoHS512!!!!!!!!!";
 
     public String generarToken(String email) {
         Date ahora = new Date();

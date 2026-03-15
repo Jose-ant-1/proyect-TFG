@@ -1,15 +1,17 @@
 package com.example.proyecto.DTO;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
 import lombok.Data;
+import lombok.AllArgsConstructor;
 
 @Data
 @AllArgsConstructor
 public class JwtResponse {
     private String token;
-    private String type = "Bearer";
+    private String email;
+    private String nombre;
+    private List<String> roles;
 
     public JwtResponse(String token) {
-        this.token = token;
     }
 }
