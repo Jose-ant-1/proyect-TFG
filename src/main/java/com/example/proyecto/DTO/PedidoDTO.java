@@ -11,7 +11,6 @@ public class PedidoDTO {
     private String notaCliente;
     private double total;
 
-    // Líneas del pedido
     private List<ItemDTO> items;
 
     @Data

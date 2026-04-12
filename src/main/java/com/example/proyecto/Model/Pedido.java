@@ -32,7 +32,7 @@ public class Pedido {
 
     private double total;
 
-    private String estado; // "pendiente de pago", "pagado", etc. [cite: 34, 47]
+    private String estado;
 
     @Column(name = "direccion_envio")
     private String direccionEnvio;

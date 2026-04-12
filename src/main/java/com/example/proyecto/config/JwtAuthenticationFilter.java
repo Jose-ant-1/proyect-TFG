@@ -28,13 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. Si es login o registro, dejamos pasar sin filtrar
+        // Si es login o registro, dejamos pasar sin filtrar
         if (request.getServletPath().contains("/api/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Intentamos obtener el token
+        // Intentamos obtener el token
         String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt) && tokenProvider.validarToken(jwt)) {
@@ -47,7 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // --- AÑADE EL LOG AQUÍ (Donde email sí existe y el usuario ya se autenticó) ---
             System.out.println("DEBUG SECURITY - Usuario: " + email);
             System.out.println("DEBUG SECURITY - Autoridades: " + authentication.getAuthorities());
         }

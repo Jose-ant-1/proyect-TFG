@@ -40,7 +40,7 @@ public class Usuario implements UserDetails {
     @Column(name = "codigo_postal")
     private int codigoPostal;
 
-    private String rol; // Podría ser un Enum (ADMIN, CLIENTE)
+    private String rol;
     private String estado;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -65,8 +65,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convierte tu String "rol" (ej: ADMIN) en una autoridad de Spring
-        // Es importante que el prefijo sea ROLE_ si usas hasRole en la config
+        // Es importante que el prefijo sea ROLE_ si usamos hasRole en la config
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.rol));
     }
 
@@ -77,7 +76,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // Usaremos el email para el login
+        return this.email;
     }
 
     @Override public boolean isAccountNonExpired() { return true; }

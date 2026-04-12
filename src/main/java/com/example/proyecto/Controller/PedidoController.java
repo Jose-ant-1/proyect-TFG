@@ -19,25 +19,21 @@ public class PedidoController {
     @Autowired
     private PedidoService pedidoService;
 
-    // 1. Crear un pedido (POST) - Recibe el PedidoDTO
     @PostMapping
     public ResponseEntity<?> crearPedido(@RequestBody PedidoDTO pedidoDTO) {
         try {
             Pedido nuevoPedido = pedidoService.crearDesdeDTO(pedidoDTO);
             return new ResponseEntity<>(nuevoPedido, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Devuelve un 400 Bad Request si falla el stock o no existe el usuario/producto
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // 2. Obtener todos los pedidos (GET)
     @GetMapping
     public List<Pedido> listarTodos() {
         return pedidoService.listarTodos();
     }
 
-    // 3. Obtener un pedido por ID (GET)
     @GetMapping("/{id}")
     public ResponseEntity<Pedido> obtenerPorId(@PathVariable int id) {
         return pedidoService.buscarPorId(id)
@@ -45,13 +41,11 @@ public class PedidoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 4. Obtener pedidos de un usuario específico (GET)
     @GetMapping("/usuario/{idUsuario}")
     public List<Pedido> obtenerPorUsuario(@PathVariable int idUsuario) {
         return pedidoService.buscarPorUsuario(idUsuario);
     }
 
-    // 5. Actualizar estado del pedido (PATCH)
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody Map<String, String> body) {
         String nuevoEstado = body.get("estado");
@@ -67,12 +61,11 @@ public class PedidoController {
         }
     }
 
-    // 6. Eliminar pedido (DELETE)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarPedido(@PathVariable int id) {
         try {
             pedidoService.eliminar(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }

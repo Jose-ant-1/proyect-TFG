@@ -10,9 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permitir CORS en todos los endpoints
-                .allowedOrigins("http://localhost:3000", "http://localhost:4200") // URL de tu Frontend
+                .allowedOrigins("http://localhost:3000", "http://localhost:4200") // URL de Frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
-                .allowedHeaders("*") // Permitir todos los headers (necesario para el Token JWT)
+                .allowedHeaders("*") // Permitir todos los headers (para el Token JWT)
                 .allowCredentials(true); // Permitir cookies/auth headers
     }
 }

@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CORS: Configuración explícita para evitar el error del log anterior
+                // CORS: Configuración explícita para evitar el error del log anterior
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
                     // Especifica el origen exacto de tu Angular
@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll() // Login y Registro
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll() // Ver catálogo y detalle
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -54,15 +56,13 @@ public class SecurityConfig {
                         ).hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
-                        // --- CORRECCIÓN AQUÍ ---
-                        // Usamos hasRole("ADMIN") que busca automáticamente "ROLE_ADMIN"
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                // Importante: usar el método del Bean para asegurar que se inyecta bien
+                // usar el metodo del Bean para asegurar que se inyecta bien
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

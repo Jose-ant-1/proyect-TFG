@@ -17,23 +17,23 @@ public class MaterialesController {
         this.service = service;
     }
 
-    @GetMapping // GET ALL
+    @GetMapping
     public List<Materiales> findAll() {
         return service.findAll();
     }
 
-    @GetMapping("/{id}") // FIND BY ID
+    @GetMapping("/{id}")
     public ResponseEntity<Materiales> findById(@PathVariable Integer id) {
         Materiales material = service.findById(id);
         return material != null ? ResponseEntity.ok(material) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping // CREATE
+    @PostMapping
     public Materiales create(@RequestBody Materiales material) {
         return service.save(material);
     }
 
-    @PutMapping("/{id}") // UPDATE
+    @PutMapping("/{id}")
     public ResponseEntity<Materiales> update(@PathVariable Integer id, @RequestBody Materiales detalles) {
         if (service.findById(id) != null) {
             detalles.setId(id);
@@ -42,7 +42,7 @@ public class MaterialesController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}") // DELETE
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

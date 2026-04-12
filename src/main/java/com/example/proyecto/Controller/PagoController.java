@@ -17,23 +17,23 @@ public class PagoController {
         this.service = service;
     }
 
-    @GetMapping // GET ALL
+    @GetMapping
     public List<Pago> findAll() {
         return service.findAll();
     }
 
-    @GetMapping("/{id}") // FIND BY ID
+    @GetMapping("/{id}")
     public ResponseEntity<Pago> findById(@PathVariable Integer id) {
         Pago pago = service.findById(id);
         return pago != null ? ResponseEntity.ok(pago) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping // CREATE
+    @PostMapping
     public Pago create(@RequestBody Pago pago) {
         return service.save(pago);
     }
 
-    @PutMapping("/{id}") // UPDATE
+    @PutMapping("/{id}")
     public ResponseEntity<Pago> update(@PathVariable Integer id, @RequestBody Pago detalles) {
         if (service.findById(id) != null) {
             detalles.setId(id);
@@ -42,7 +42,7 @@ public class PagoController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}") // DELETE
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

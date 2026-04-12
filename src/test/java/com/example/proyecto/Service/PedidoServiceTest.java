@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional // Evita que los datos del test se queden en tu base de datos real
+@Transactional
 class PedidoServiceIntegrationTest {
 
     @Autowired
@@ -36,7 +36,7 @@ class PedidoServiceIntegrationTest {
 
     @Test
     void testRegistroUsuarioYCreacionPedidoConStock() {
-        // --- 1. PROBAR ENCRIPTACIÓN (SERVICIO USUARIOS) ---
+        // probar encriptacion
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setEmail("test_puntos@proyecto.com");
         nuevoUsuario.setContrasenia("password123");
@@ -49,7 +49,7 @@ class PedidoServiceIntegrationTest {
         assertNotEquals("password123", usuarioGuardado.getContrasenia());
         assertTrue(passwordEncoder.matches("password123", usuarioGuardado.getContrasenia()));
 
-        // --- 2. PROBAR REDUCCIÓN DE STOCK (SERVICIO PEDIDOS) ---
+        // --- 2. PROBAR REDUCCIÓN DE STOCK  ---
 
         // Creamos un producto con 10 unidades de stock
         ProductoPredisenyado producto = ProductoPredisenyado.builder()
@@ -72,7 +72,7 @@ class PedidoServiceIntegrationTest {
         item.setCantidad(1);
         item.setPrecioUnitario(25.0);
 
-        // IMPORTANTE: Seteamos la lista de items para evitar el NullPointerException
+        // Seteamos la lista de items para evitar el NullPointerException
         pedidoDTO.setItems(List.of(item));
 
         // Ejecutamos la creación del pedido

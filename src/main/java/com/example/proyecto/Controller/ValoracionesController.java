@@ -30,7 +30,7 @@ public class ValoracionesController {
 
     @PostMapping
     public Valoraciones create(@RequestBody Valoraciones valoracion) {
-        // La base de datos denegará el insert si idUsuario+idProducto ya existen
+        // La base de datos denegará el insert si idUsuario + idProducto ya existen
         return service.save(valoracion);
     }
 

@@ -44,7 +44,7 @@ public class SolicitudPersonalizada {
 
     private String acabado;
     private boolean urgente;
-    private String estado; // "pendiente", "presupuestado"
+    private String estado;
 
     @Column(name = "fecha_solicitud")
     private LocalDate fechaSolicitud;
@@ -52,7 +52,7 @@ public class SolicitudPersonalizada {
     @Column(name = "fecha_actualizacion")
     private LocalDate fechaActualizacion;
 
-    // ... (campos ManyToOne usuario, material, tecno igual)
+
 
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

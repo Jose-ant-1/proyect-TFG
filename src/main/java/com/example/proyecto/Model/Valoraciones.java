@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter @Setter // Cambiado de @Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,18 +22,17 @@ public class Valoraciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // Eliminados los int idUsuario e int idProducto
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario") // Eliminado insertable/updatable = false
-    @JsonIgnore // Mantenemos el ignore para que no cargue el usuario al ver una valoración
+    @JoinColumn(name = "id_usuario")
+    @JsonIgnore
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto") // Eliminado insertable/updatable = false
+    @JoinColumn(name = "id_producto")
     private ProductoPredisenyado producto;
 
-    @Column(name = "fecha_valoracion") // Eliminado @Temporal obsoleto
+    @Column(name = "fecha_valoracion")
     private LocalDate fechaValoracion;
 
     private int puntuacion;

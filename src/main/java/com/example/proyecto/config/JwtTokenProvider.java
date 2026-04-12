@@ -14,8 +14,6 @@ public class JwtTokenProvider {
     // Clave secreta para firmar el token (en producción iría en application.properties)
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private final long jwtExpirationInMs = 3600000; // 1 hora
-    // Usa una cadena fija y larga. Si es aleatoria por cada reinicio, el 401 es inevitable.
-    private final String jwtSecret = "ClaveSuperSecretaDeAlMenos64CaracteresParaQueFuncioneElAlgoritmoHS512!!!!!!!!!";
 
     public String generarToken(String email) {
         Date ahora = new Date();
@@ -43,7 +41,6 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
             return true;
         } catch (Exception ex) {
-            // Aquí podrías loguear el error (token expirado, falso, etc.)
             return false;
         }
     }

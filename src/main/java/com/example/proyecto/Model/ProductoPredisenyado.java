@@ -19,7 +19,7 @@ public class ProductoPredisenyado {
     private int id;
 
     @Column(name = "id_categoria")
-    private int idCategoria; // Si creas la entidad Categoria, cámbialo a @ManyToOne
+    private int idCategoria;
 
     @ManyToOne
     @JoinColumn(name = "id_material")
@@ -31,6 +31,9 @@ public class ProductoPredisenyado {
 
     @Column(name = "nombre_producto", nullable = false)
     private String nombreProducto;
+
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;

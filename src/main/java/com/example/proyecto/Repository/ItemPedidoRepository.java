@@ -7,6 +7,6 @@ import java.util.List;
 
 @Repository
 public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Integer> {
-    // Útil para buscar todos los productos de un pedido específico
+    // para buscar todos los productos de un pedido especifico
     List<ItemPedido> findByPedidoIdPedido(int idPedido);
 }

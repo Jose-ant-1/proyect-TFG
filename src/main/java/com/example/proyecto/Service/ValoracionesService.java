@@ -17,7 +17,6 @@ public class ValoracionesService {
         return valoracionesRepository.findAll();
     }
 
-    // EL CAMBIO ESTÁ AQUÍ: Usamos Integer porque tu Entidad usa "int id"
     public Valoraciones findById(Integer id) {
         return valoracionesRepository.findById(id).orElse(null);
     }

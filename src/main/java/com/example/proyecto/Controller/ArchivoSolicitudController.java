@@ -17,33 +17,33 @@ public class ArchivoSolicitudController {
         this.service = service;
     }
 
-    @GetMapping // GET ALL
+    @GetMapping
     public List<ArchivoSolicitud> findAll() {
         return service.findAll();
     }
 
-    @GetMapping("/{id}") // FIND BY ID
+    @GetMapping("/{id}")
     public ResponseEntity<ArchivoSolicitud> findById(@PathVariable Integer id) {
         ArchivoSolicitud archivo = service.findById(id);
         return archivo != null ? ResponseEntity.ok(archivo) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping // CREATE
+    @PostMapping
     public ArchivoSolicitud create(@RequestBody ArchivoSolicitud archivo) {
         return service.save(archivo);
     }
 
-    @PutMapping("/{id}") // UPDATE
+    @PutMapping("/{id}")
     public ResponseEntity<ArchivoSolicitud> update(@PathVariable Integer id, @RequestBody ArchivoSolicitud detalles) {
         ArchivoSolicitud existente = service.findById(id);
         if (existente != null) {
-            detalles.setId(id); // Aseguramos que se actualice el ID correcto
+            detalles.setId(id);
             return ResponseEntity.ok(service.save(detalles));
         }
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}") // DELETE
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();

@@ -26,14 +26,11 @@ public class PedidoService {
     @Autowired
     private ProdPrediRepository productoRepository;
 
-    // --- 1. CREATE (Crear pedido desde DTO, generar líneas y restar stock) ---
     @Transactional
     public Pedido crearDesdeDTO(PedidoDTO dto) {
-        // 1. Validar que el usuario existe
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario()));
 
-        // 2. Construir la cabecera del Pedido
         Pedido pedido = Pedido.builder()
                 .usuario(usuario)
                 .numeroPedido("PED-" + System.currentTimeMillis()) // Generación de número único
@@ -47,21 +44,20 @@ public class PedidoService {
 
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
-        // 3. Procesar los ítems del pedido
         for (PedidoDTO.ItemDTO itemDto : dto.getItems()) {
             ProductoPredisenyado prod = productoRepository.findById(itemDto.getIdProducto())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + itemDto.getIdProducto()));
 
-            // 3.1 Verificar stock (Punto 6.4 del documento UT3)
+            // Verificar stock
             if (prod.getStockDisponible() < itemDto.getCantidad()) {
                 throw new RuntimeException("Stock insuficiente para el producto: " + prod.getNombreProducto());
             }
 
-            // 3.2 Restar stock del almacén
+            // Restar stock del almacén
             prod.setStockDisponible(prod.getStockDisponible() - itemDto.getCantidad());
             productoRepository.save(prod);
 
-            // 3.3 Crear y guardar la línea del pedido
+            // Crear y guardar la línea del pedido
             ItemPedido linea = ItemPedido.builder()
                     .pedido(pedidoGuardado)
                     .producto(prod)
@@ -75,7 +71,7 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
-    // --- 2. READ (Lectura de pedidos) ---
+
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
     }
@@ -88,7 +84,7 @@ public class PedidoService {
         return pedidoRepository.findByUsuarioId(idUsuario);
     }
 
-    // --- 3. UPDATE (Actualizar estado) ---
+
     @Transactional
     public Pedido actualizarEstado(int idPedido, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(idPedido)
@@ -100,7 +96,7 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    // --- 4. DELETE (Eliminar pedido y restaurar stock) ---
+
     @Transactional
     public void eliminar(int idPedido) {
         Pedido pedido = pedidoRepository.findById(idPedido)
@@ -115,8 +111,7 @@ public class PedidoService {
             productoRepository.save(prod);
         }
 
-        // Eliminar el pedido (los items se borran en cascada si está configurado,
-        // o puedes forzar itemPedidoRepository.deleteAll(items) aquí si no lo está)
+
         pedidoRepository.delete(pedido);
     }
 }

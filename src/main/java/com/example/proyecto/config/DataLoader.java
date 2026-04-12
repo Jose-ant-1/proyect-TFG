@@ -20,15 +20,13 @@ public class DataLoader implements CommandLineRunner {
     private final SolicitudPersoRepository solRepo;
     private final ArchivoSolicitudRepository archivoRepo;
     private final ValoracionesRepository valorRepo;
-    // NUEVO: Necesitamos el repositorio para los ítems
     private final ItemPedidoRepository itemPedidoRepo;
-    private final PasswordEncoder passwordEncoder;
 
     public DataLoader(UsuarioService usuarioRepo, TecnoImpreRepository tecnoRepo,
                       MaterialesRepository matRepo, ProdPrediRepository prodRepo,
                       PedidoRepository pedidoRepo, PagoRepository pagoRepo,
                       SolicitudPersoRepository solRepo, ArchivoSolicitudRepository archivoRepo,
-                      ValoracionesRepository valorRepo, ItemPedidoRepository itemPedidoRepo, PasswordEncoder passwordEncoder) {
+                      ValoracionesRepository valorRepo, ItemPedidoRepository itemPedidoRepo) {
         this.usuarioRepo = usuarioRepo;
         this.tecnoRepo = tecnoRepo;
         this.matRepo = matRepo;
@@ -39,14 +37,14 @@ public class DataLoader implements CommandLineRunner {
         this.archivoRepo = archivoRepo;
         this.valorRepo = valorRepo;
         this.itemPedidoRepo = itemPedidoRepo;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
     @Override
     public void run(String... args) throws Exception {
 
         if (usuarioRepo.findByEmail("admin@tienda3d.com").isPresent()) {
-            // System.out.println(">> Datos ya existentes. Saltando carga...");
+            System.out.println(">> Datos ya existentes. Saltando carga...");
             return;
         }
 
@@ -56,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
                 .nombre("Admin")
                 .apellidos("García Pérez")
                 .email("admin@tienda3d.com")
-                .contrasenia("1234") // Nota: En producción esto iría encriptado
+                .contrasenia("1234")
                 .telefono("600123456")
                 .direccion("Calle Mayor 1")
                 .ciudad("Madrid")
@@ -102,10 +100,11 @@ public class DataLoader implements CommandLineRunner {
                 .destacado(true)
                 .disponible(true)
                 .fechaCreacion(LocalDate.now())
+                .imagenUrl("https://m.media-amazon.com/images/I/71nAKXhEakL._AC_SY450_.jpg")
                 .build();
         prodRepo.save(figura);
 
-        // 5. PEDIDO (Cabecera)
+        // 5. PEDIDO
         Pedido pedido1 = Pedido.builder()
                 .usuario(admin)
                 .numeroPedido("PED-2024-0001")
@@ -119,7 +118,7 @@ public class DataLoader implements CommandLineRunner {
                 .build();
         pedidoRepo.save(pedido1);
 
-        // 6. ITEM PEDIDO (¡IMPORTANTE! Vincula el producto con el pedido)
+        // 6. ITEM PEDIDO
         ItemPedido linea1 = ItemPedido.builder()
                 .pedido(pedido1)
                 .producto(figura)
@@ -137,7 +136,7 @@ public class DataLoader implements CommandLineRunner {
                 .estadoPago("COMPLETADO")
                 .idTransaccion("TXN-99887766")
                 .fechaPago(LocalDate.now())
-                // .fechaCreacion(LocalDate.now()) // Revisa si Pago.java tiene este campo, si no, bórralo
+                .fechaCreacion(LocalDate.now())
                 .build();
         pagoRepo.save(pago1);
 

@@ -30,7 +30,6 @@ public class ItemPedido {
     @Column(name = "precio_unitario", nullable = false)
     private double precioUnitario;
 
-    // El subtotal de esta línea se puede calcular dinámicamente
     public double getSubtotal() {
         return this.cantidad * this.precioUnitario;
     }
