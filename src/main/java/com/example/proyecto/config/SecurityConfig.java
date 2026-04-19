@@ -34,34 +34,52 @@ public class SecurityConfig {
                 // CORS: Configuración explícita para evitar el error del log anterior
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    // Especifica el origen exacto de tu Angular
                     corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // Desactivar explícitamente primero
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Login y Registro
-                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll() // Ver catálogo y detalle
+                        // ACCESO PÚBLICO Y CONFIGURACIÓN GLOBAL
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+
+                        // VALORACIONES
+                        .requestMatchers(HttpMethod.GET, "/api/valoraciones/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/valoraciones/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/valoraciones/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/valoraciones/**").authenticated()
+
                         // PRODUCTOS PREDISEÑADOS
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/productos", "/api/productos/").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/productos/**"
-                        ).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
+
+                        // MATERIALES Y TECNOLOGÍAS
+                        .requestMatchers(HttpMethod.GET, "/api/materiales/**", "/api/tecnologias/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+
+                        // PEDIDOS (ORDEN CRÍTICO: ESPECÍFICO -> GENÉRICO)
+                        .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
+
+                        // USUARIOS
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
+                        // CARRITO
+                        .requestMatchers("/api/carrito/**").authenticated()
+
+                        // CUALQUIER OTRA RUTA
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
                 // usar el metodo del Bean para asegurar que se inyecta bien
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

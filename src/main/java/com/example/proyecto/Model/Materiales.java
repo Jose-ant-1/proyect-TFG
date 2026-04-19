@@ -19,7 +19,7 @@ public class Materiales {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "nombre_material", nullable = false)
     private String nombreMaterial;
@@ -32,10 +32,10 @@ public class Materiales {
     private String color;
 
     @Column(name = "precio_por_gramo")
-    private double precioPorGramo;
+    private Double precioPorGramo;
 
     @Column(name = "stock_gramo")
-    private double stockGramo;
+    private Double stockGramo;
 
     @Column(columnDefinition = "TEXT")
     private String propiedades;
@@ -45,7 +45,7 @@ public class Materiales {
     private boolean disponible;
 
     @Column(name = "fecha_creacion")
-    private LocalDate fechaCreacion;
+    private LocalDate fechaCreacion = LocalDate.now();
 
     @OneToMany(mappedBy = "material")
     @ToString.Exclude

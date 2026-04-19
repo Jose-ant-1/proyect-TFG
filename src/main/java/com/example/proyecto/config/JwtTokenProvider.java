@@ -12,7 +12,9 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     // Clave secreta para firmar el token (en producción iría en application.properties)
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+// Esta cadena debe ser muy larga (mínimo 64 caracteres) para cumplir con el algoritmo HS512 que usas
+    private static final String SECRET_SEED = "esta_es_una_clave_secreta_muy_larga_y_segura_para_el_proyecto_carrito_2026_spring_boot";
+    private final Key key = Keys.hmacShaKeyFor(SECRET_SEED.getBytes(StandardCharsets.UTF_8));
     private final long jwtExpirationInMs = 3600000; // 1 hora
 
     public String generarToken(String email) {

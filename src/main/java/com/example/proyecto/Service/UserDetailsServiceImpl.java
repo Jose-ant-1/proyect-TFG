@@ -19,17 +19,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
+        // Buscamos el usuario en la base de datos
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
 
-        System.out.println("DEBUG LOGIN - Email: " + email);
-        System.out.println("DEBUG LOGIN - Hash en DB: " + usuario.getContrasenia());
+        // DEBUG para verificar que llegamos aquí
+        System.out.println("Cargando usuario desde DB para seguridad: " + usuario.getEmail());
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(usuario.getEmail())
-                .password(usuario.getContrasenia())
-                .authorities("ROLE_" + usuario.getRol())
-                .build();
+        // DEBES DEVOLVER TU ENTIDAD USUARIO
+        // (Asegúrate de que la clase Usuario implemente UserDetails)
+        return usuario;
     }
 }

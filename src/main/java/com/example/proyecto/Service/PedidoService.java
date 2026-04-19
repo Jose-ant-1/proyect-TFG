@@ -114,4 +114,14 @@ public class PedidoService {
 
         pedidoRepository.delete(pedido);
     }
+
+    public List<Pedido> buscarPorEmailUsuario(String email) {
+        // 1. Buscamos al usuario por su email
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+
+        // 2. Usamos el método que ya tienes en el repository para filtrar por su ID
+        return pedidoRepository.findByUsuarioId(usuario.getId());
+    }
+
 }

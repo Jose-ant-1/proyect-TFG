@@ -3,9 +3,9 @@ package com.example.proyecto.Controller;
 import com.example.proyecto.DTO.PedidoDTO;
 import com.example.proyecto.Model.Pedido;
 import com.example.proyecto.Service.PedidoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,11 +13,30 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos")
-
 public class PedidoController {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
+
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
+    }
+
+    /**
+     * ESTE ES EL MÉTODO NUEVO
+     * Gracias al objeto Authentication, Spring sabe quién es el usuario por el JWT
+     */
+    @GetMapping("/mis-pedidos")
+    public ResponseEntity<List<Pedido>> obtenerMisPedidos(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = authentication.getName(); // Extrae el email del token
+        List<Pedido> misPedidos = pedidoService.buscarPorEmailUsuario(email);
+        return ResponseEntity.ok(misPedidos);
+    }
+
+    // --- MÉTODOS ANTERIORES ACTUALIZADOS ---
 
     @PostMapping
     public ResponseEntity<?> crearPedido(@RequestBody PedidoDTO pedidoDTO) {
@@ -41,18 +60,9 @@ public class PedidoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/usuario/{idUsuario}")
-    public List<Pedido> obtenerPorUsuario(@PathVariable int idUsuario) {
-        return pedidoService.buscarPorUsuario(idUsuario);
-    }
-
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody Map<String, String> body) {
         String nuevoEstado = body.get("estado");
-        if (nuevoEstado == null || nuevoEstado.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "El campo 'estado' es obligatorio"));
-        }
-
         try {
             Pedido actualizado = pedidoService.actualizarEstado(id, nuevoEstado);
             return ResponseEntity.ok(actualizado);

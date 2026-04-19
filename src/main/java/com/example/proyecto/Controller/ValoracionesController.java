@@ -1,20 +1,28 @@
 package com.example.proyecto.Controller;
 
+import com.example.proyecto.Model.Usuario;
 import com.example.proyecto.Model.Valoraciones;
+import com.example.proyecto.Service.UsuarioService;
 import com.example.proyecto.Service.ValoracionesService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/valoraciones")
 public class ValoracionesController {
 
     private final ValoracionesService service;
+    private final UsuarioService usuarioService;
 
-    public ValoracionesController(ValoracionesService service) {
+    public ValoracionesController(ValoracionesService service, UsuarioService usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -29,9 +37,25 @@ public class ValoracionesController {
     }
 
     @PostMapping
-    public Valoraciones create(@RequestBody Valoraciones valoracion) {
-        // La base de datos denegará el insert si idUsuario + idProducto ya existen
-        return service.save(valoracion);
+    public ResponseEntity<?> create(@RequestBody Valoraciones valoracion, Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 1. Extraer el email del token
+        String email = authentication.getName();
+
+        // 2. Buscar el usuario y manejar el Optional
+        // .orElseThrow() lanzará una excepción si no encuentra al usuario,
+        // o puedes usar .orElse(null) si prefieres manejarlo de otra forma.
+        Usuario usuario = usuarioService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+
+        // 3. Asignar el usuario a la valoración antes de guardar
+        valoracion.setUsuario(usuario);
+        valoracion.setFechaValoracion(java.time.LocalDate.now());
+
+        return ResponseEntity.ok(service.save(valoracion));
     }
 
     @PutMapping("/{id}")
@@ -52,4 +76,14 @@ public class ValoracionesController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/producto/{productoId}")
+    public ResponseEntity<List<Valoraciones>> findByProducto(@PathVariable Integer productoId) {
+        List<Valoraciones> lista = service.findByProducto(productoId);
+
+        // Si no hay valoraciones, devolvemos una lista vacía con 200 OK
+        // (o podrías devolver 204 No Content si lo prefieres)
+        return ResponseEntity.ok(lista);
+    }
+
 }

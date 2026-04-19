@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -53,7 +54,6 @@ public class SolicitudPersonalizada {
     private LocalDate fechaActualizacion;
 
 
-
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @JsonIgnore
@@ -63,5 +63,13 @@ public class SolicitudPersonalizada {
     @ToString.Exclude
     @JsonIgnore
     private Set<Pago> pagos;
+
+    @Column(name = "precio")
+    private Double precio; // Usamos Double (objeto) para que pueda ser null hasta que se presupueste
+
+    @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @JsonIgnore
+    private List<ElementoCarrito> elementosCarrito;
 
 }

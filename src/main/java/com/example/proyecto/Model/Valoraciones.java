@@ -1,6 +1,8 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -20,12 +22,12 @@ public class Valoraciones {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Usuario usuario;
 
     @ManyToOne
@@ -33,9 +35,10 @@ public class Valoraciones {
     private ProductoPredisenyado producto;
 
     @Column(name = "fecha_valoracion")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaValoracion;
 
-    private int puntuacion;
+    private Integer puntuacion;
 
     @Column(columnDefinition = "TEXT")
     private String comentario;

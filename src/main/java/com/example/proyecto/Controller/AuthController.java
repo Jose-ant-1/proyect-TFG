@@ -1,5 +1,6 @@
 package com.example.proyecto.Controller;
 
+import com.example.proyecto.DTO.RegistroRequest;
 import com.example.proyecto.Model.Usuario;
 import com.example.proyecto.Repository.UsuarioRepository;
 import com.example.proyecto.config.JwtTokenProvider;
@@ -59,24 +60,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
-        // 1. Verificamos si el email ya está en uso
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+    public ResponseEntity<?> registrar(@RequestBody RegistroRequest request) {
+        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: El email ya está registrado");
         }
 
-        // 2. Encriptamos la contraseña antes de guardarla
-        // El passwordEncoder es el Bean que definimos en SecurityConfig
-        usuario.setContrasenia(passwordEncoder.encode(usuario.getPassword()));
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setApellidos(request.getApellidos()); // ¡No te olvides de este!
+        usuario.setEmail(request.getEmail());
+        usuario.setTelefono(request.getTelefono());   // ¡Y este!
 
-        // 3. Asignamos un rol por defecto si viene vacío
-        if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
-            usuario.setRol("USER");
-        }
+        // Aquí usamos el nombre que definimos en el DTO
+        usuario.setContrasenia(passwordEncoder.encode(request.getContrasenia()));
 
-        // 4. Guardamos el usuario
+        usuario.setRol("CLIENTE");
+        usuario.setEstado("ACTIVO");
+
         usuarioRepository.save(usuario);
-
         return ResponseEntity.ok("Usuario registrado con éxito");
     }
 

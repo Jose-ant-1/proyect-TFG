@@ -16,10 +16,10 @@ public class ProductoPredisenyado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "id_categoria")
-    private int idCategoria;
+    private Integer idCategoria;
 
     @ManyToOne
     @JoinColumn(name = "id_material")
@@ -38,24 +38,24 @@ public class ProductoPredisenyado {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    private double precio;
+    private Double precio;
 
     @Column(name = "stock_disponible")
-    private int stockDisponible;
+    private Integer stockDisponible;
 
     private String dimensiones;
 
     @Column(name = "peso_gramos")
-    private double pesoGramos;
+    private Double pesoGramos;
 
     @Column(name = "tiempo_impresion_minutos")
-    private int tiempoImpresionMinutos;
+    private Integer tiempoImpresionMinutos;
 
     @Column(columnDefinition = "TEXT")
     private String caracteristicas;
 
-    private boolean destacado;
-    private boolean disponible;
+    private Boolean destacado;
+    private Boolean disponible;
 
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;

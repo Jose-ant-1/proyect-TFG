@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -20,9 +21,15 @@ public class ItemPedido {
     @JsonIgnore
     private Pedido pedido;
 
+    // Relación con producto estándar (ahora es opcional)
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
+    @JoinColumn(name = "id_producto", nullable = true)
     private ProductoPredisenyado producto;
+
+    // NUEVO: Relación con solicitud personalizada (opcional)
+    @OneToOne
+    @JoinColumn(name = "id_solicitud", nullable = true)
+    private SolicitudPersonalizada solicitud;
 
     @Column(nullable = false)
     private int cantidad;

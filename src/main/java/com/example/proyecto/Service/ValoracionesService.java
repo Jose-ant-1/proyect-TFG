@@ -28,4 +28,8 @@ public class ValoracionesService {
     public void delete(Integer id) {
         valoracionesRepository.deleteById(id);
     }
+
+    public List<Valoraciones> findByProducto(Integer productoId) {
+        return valoracionesRepository.findByProductoId(productoId);
+    }
 }
