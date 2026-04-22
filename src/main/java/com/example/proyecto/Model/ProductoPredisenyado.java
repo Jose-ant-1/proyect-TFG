@@ -17,9 +17,7 @@ public class ProductoPredisenyado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "id_categoria")
-    private Integer idCategoria;
+    
 
     @ManyToOne
     @JoinColumn(name = "id_material")

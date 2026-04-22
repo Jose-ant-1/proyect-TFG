@@ -67,7 +67,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
 
-                        // PEDIDOS (ORDEN CRÍTICO: ESPECÍFICO -> GENÉRICO)
+                        // SOLICITUDES PERSONALIZADAS
+                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").hasRole("USER") // Solo clientes crean
+                        .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated() // Ver sus propias o admin todas
+                        .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN") // Solo admin presupuesta
+
+                        // PEDIDOS
                         .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
