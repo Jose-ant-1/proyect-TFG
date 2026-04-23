@@ -21,10 +21,6 @@ public class PedidoController {
         this.pedidoService = pedidoService;
     }
 
-    /**
-     * ESTE ES EL MÉTODO NUEVO
-     * Gracias al objeto Authentication, Spring sabe quién es el usuario por el JWT
-     */
     @GetMapping("/mis-pedidos")
     public ResponseEntity<List<Pedido>> obtenerMisPedidos(Authentication authentication) {
         if (authentication == null) {
@@ -54,10 +50,23 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> obtenerPorId(@PathVariable int id) {
-        return pedidoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> obtenerPorId(@PathVariable int id, Authentication authentication) {
+        Pedido pedido = pedidoService.buscarPorId(id).orElse(null);
+
+        if (pedido == null) return ResponseEntity.notFound().build();
+
+        // Lógica de seguridad:
+        String emailUsuarioLogueado = authentication.getName();
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean esDueño = pedido.getUsuario().getEmail().equals(emailUsuarioLogueado);
+
+        if (esAdmin || esDueño) {
+            return ResponseEntity.ok(pedido);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "No tienes permiso para ver este pedido"));
+        }
     }
 
     @PatchMapping("/{id}/estado")
@@ -80,4 +89,6 @@ public class PedidoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
+
+
 }

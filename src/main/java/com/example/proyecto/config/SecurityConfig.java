@@ -74,6 +74,7 @@ public class SecurityConfig {
 
                         // PEDIDOS
                         .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated() // Permitir a logueados consultar
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
                         // USUARIOS
