@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -46,8 +47,8 @@ public class Pago {
     private String detalles;
 
     @Column(name = "fecha_pago")
-    private LocalDate fechaPago;
+    private LocalDateTime fechaPago;
 
     @Column(name = "fecha_creacion")
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
 }

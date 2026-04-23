@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -44,14 +43,13 @@ public class SolicitudPersonalizada {
     private String requisitosEspeciales;
 
     private String acabado;
-    private boolean urgente;
     private String estado;
 
     @Column(name = "fecha_solicitud")
-    private LocalDate fechaSolicitud;
+    private LocalDateTime fechaSolicitud;
 
     @Column(name = "fecha_actualizacion")
-    private LocalDate fechaActualizacion;
+    private LocalDateTime fechaActualizacion;
 
 
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,10 +64,5 @@ public class SolicitudPersonalizada {
 
     @Column(name = "precio")
     private Double precio; // Usamos Double (objeto) para que pueda ser null hasta que se presupueste
-
-    @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    @JsonIgnore
-    private List<ElementoCarrito> elementosCarrito;
 
 }

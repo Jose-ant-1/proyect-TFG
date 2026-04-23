@@ -7,7 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +38,8 @@ public class PedidoService {
                 .direccionEnvio(dto.getDireccionEnvio())
                 .notaCliente(dto.getNotaCliente())
                 .estado("PENDIENTE") // Estado inicial por defecto
-                .fechaPedido(LocalDate.now())
-                .fecha_actualizacion(LocalDate.now())
+                .fechaPedido(LocalDateTime.now())
+                .fecha_actualizacion(LocalDateTime.now())
                 .build();
 
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
@@ -91,7 +91,7 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
         pedido.setEstado(nuevoEstado);
-        pedido.setFecha_actualizacion(LocalDate.now());
+        pedido.setFecha_actualizacion(LocalDateTime.now());
 
         return pedidoRepository.save(pedido);
     }

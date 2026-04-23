@@ -40,8 +40,6 @@ public class Materiales {
     @Column(columnDefinition = "TEXT")
     private String propiedades;
 
-    private String imagen;
-
     private boolean disponible;
 
     @Column(name = "fecha_creacion")
@@ -56,5 +54,16 @@ public class Materiales {
     @ToString.Exclude
     @JsonIgnore
     private Set<SolicitudPersonalizada> solicitudes;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaCreacion = LocalDate.now();
+    }
+
+    // Se ejecuta automáticamente antes de actualizar un registro existente
+    @PreUpdate
+    protected void onUpdate() {
+        this.fechaCreacion = LocalDate.now();
+    }
 
 }

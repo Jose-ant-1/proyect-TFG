@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -113,8 +114,8 @@ public class DataLoader implements CommandLineRunner {
                 .total(30.94)
                 .estado("COMPLETADO")
                 .direccionEnvio("Calle Mayor 1, Madrid")
-                .fechaPedido(LocalDate.now())
-                .fecha_actualizacion(LocalDate.now())
+                .fechaPedido(LocalDateTime.now())
+                .fecha_actualizacion(LocalDateTime.now())
                 .build();
         pedidoRepo.save(pedido1);
 
@@ -135,8 +136,8 @@ public class DataLoader implements CommandLineRunner {
                 .metodoPago("TARJETA")
                 .estadoPago("COMPLETADO")
                 .idTransaccion("TXN-99887766")
-                .fechaPago(LocalDate.now())
-                .fechaCreacion(LocalDate.now())
+                .fechaPago(LocalDateTime.now())
+                .fechaCreacion(LocalDateTime.now())
                 .build();
         pagoRepo.save(pago1);
 
@@ -149,7 +150,7 @@ public class DataLoader implements CommandLineRunner {
                 .tecnologia(fdm)
                 .descripcion("Pieza mecánica para motor")
                 .estado("pendiente")
-                .fechaSolicitud(LocalDate.now())
+                .fechaSolicitud(LocalDateTime.now())
                 .build();
         solRepo.save(sol1);
 

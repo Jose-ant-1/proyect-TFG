@@ -24,10 +24,6 @@ public class ElementoCarrito {
     @JoinColumn(name = "id_producto", nullable = true)
     private ProductoPredisenyado producto;
 
-    @ManyToOne
-    @JoinColumn(name = "id_solicitud", nullable = true)
-    private SolicitudPersonalizada solicitud; // Este es el nombre que JPA buscará
-
     private int cantidad;
     private double precioUnitario; // Guardamos el precio del momento
 }

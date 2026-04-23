@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -17,10 +17,6 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPedido;
-
-    @ManyToOne
-    @JoinColumn(name = "id_usuario")
-    private Usuario usuario;
 
     @Column(name = "numero_pedido", unique = true, nullable = false)
     private String numeroPedido;
@@ -41,10 +37,14 @@ public class Pedido {
     private String notaCliente;
 
     @Column(name = "fecha_pedido")
-    private LocalDate fechaPedido;
+    private LocalDateTime fechaPedido;
 
     @Column(name = "fecha_actualizacion")
-    private LocalDate fecha_actualizacion;
+    private LocalDateTime fecha_actualizacion;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     @ToString.Exclude
