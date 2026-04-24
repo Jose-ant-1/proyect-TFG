@@ -74,7 +74,9 @@ public class SecurityConfig {
 
                         // PEDIDOS
                         .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated() // Permitir a logueados consultar
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated()
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
                         // USUARIOS
@@ -105,7 +107,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) {
         return authConfig.getAuthenticationManager();
     }
 
