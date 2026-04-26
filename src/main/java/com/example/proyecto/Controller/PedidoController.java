@@ -35,12 +35,14 @@ public class PedidoController {
     // --- MÉTODOS ANTERIORES ACTUALIZADOS ---
 
     @PostMapping
-    public ResponseEntity<?> crearPedido(@RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<?> crearPedido(@RequestBody PedidoDTO pedidoDTO, Authentication authentication) {
         try {
-            Pedido nuevoPedido = pedidoService.crearDesdeDTO(pedidoDTO);
+            String emailUsuario = authentication.getName();
+            Pedido nuevoPedido = pedidoService.crearDesdeDTO(pedidoDTO, emailUsuario);
             return new ResponseEntity<>(nuevoPedido, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            // Esto te imprimirá el error real en la respuesta del navegador
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
 

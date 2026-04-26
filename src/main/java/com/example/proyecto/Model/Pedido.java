@@ -16,17 +16,17 @@ public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idPedido;
+    private Integer idPedido;
 
     @Column(name = "numero_pedido", unique = true, nullable = false)
     private String numeroPedido;
 
-    private double subtotal;
+    private Double subtotal;
 
     @Column(name = "gastos_envio")
-    private double gastosEnvio;
+    private Double gastosEnvio;
 
-    private double total;
+    private Double total;
 
     private String estado;
 

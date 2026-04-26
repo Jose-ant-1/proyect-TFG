@@ -62,7 +62,6 @@ class PedidoServiceIntegrationTest {
 
         // Preparamos el DTO del pedido
         PedidoDTO pedidoDTO = new PedidoDTO();
-        pedidoDTO.setIdUsuario(usuarioGuardado.getId());
         pedidoDTO.setDireccionEnvio("Calle Mayor 1, Madrid");
         pedidoDTO.setTotal(25.0);
 
@@ -76,7 +75,7 @@ class PedidoServiceIntegrationTest {
         pedidoDTO.setItems(List.of(item));
 
         // Ejecutamos la creación del pedido
-        pedidoService.crearDesdeDTO(pedidoDTO);
+        pedidoService.crearDesdeDTO(pedidoDTO, usuarioGuardado.getEmail());
 
         // Verificamos que el stock ha bajado de 10 a 9
         ProductoPredisenyado productoPostVenta = productoRepository.findById(producto.getId()).orElseThrow();

@@ -1,8 +1,11 @@
 package com.example.proyecto.Controller;
 
 import com.example.proyecto.Model.Pago;
+import com.example.proyecto.Model.Usuario;
+import com.example.proyecto.Repository.UsuarioRepository;
 import com.example.proyecto.Service.PagoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,10 +15,13 @@ import java.util.List;
 public class PagoController {
 
     private final PagoService service;
+    private final UsuarioRepository usuarioService;
 
-    public PagoController(PagoService service) {
+    public PagoController(PagoService service, UsuarioRepository usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
+
 
     @GetMapping
     public List<Pago> findAll() {
@@ -29,7 +35,21 @@ public class PagoController {
     }
 
     @PostMapping
-    public Pago create(@RequestBody Pago pago) {
+    public Pago create(@RequestBody Pago pago, Authentication authentication) {
+        // 1. Identidad segura: sacamos el email del token
+        String email = authentication.getName();
+
+        // 2. Buscamos el usuario
+        Usuario usuario = usuarioService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // 3. Asignamos los datos que faltan en el servidor
+        pago.setUsuario(usuario);
+
+        // Forzamos las fechas para evitar errores de parseo JSON
+        pago.setFechaPago(java.time.LocalDateTime.now());
+        pago.setFechaCreacion(java.time.LocalDateTime.now());
+
         return service.save(pago);
     }
 

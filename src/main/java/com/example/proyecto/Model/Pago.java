@@ -1,6 +1,7 @@
 package com.example.proyecto.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,16 +16,16 @@ public class Pago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_pedido")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Pedido pedido;
 
     @ManyToOne
@@ -32,7 +33,7 @@ public class Pago {
     private SolicitudPersonalizada solicitud;
 
     @Column(nullable = false)
-    private double importe;
+    private Double importe;
 
     @Column(name = "metodo_pago")
     private String metodoPago;

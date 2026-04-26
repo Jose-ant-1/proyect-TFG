@@ -16,61 +16,66 @@ public class PedidoService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
-
     @Autowired
     private ItemPedidoRepository itemPedidoRepository;
-
     @Autowired
     private UsuarioRepository usuarioRepository;
-
     @Autowired
     private ProdPrediRepository productoRepository;
 
     @Transactional
-    public Pedido crearDesdeDTO(PedidoDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario()));
+    public Pedido crearDesdeDTO(PedidoDTO dto, String email) {
+        // 1. Buscamos el usuario por email
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
+        // 2. Construimos la entidad Pedido
         Pedido pedido = Pedido.builder()
                 .usuario(usuario)
-                .numeroPedido("PED-" + System.currentTimeMillis()) // Generación de número único
+                .numeroPedido("PED-" + System.currentTimeMillis())
                 .total(dto.getTotal())
+                .subtotal(dto.getTotal())
+                .gastosEnvio(0.0)
                 .direccionEnvio(dto.getDireccionEnvio())
                 .notaCliente(dto.getNotaCliente())
-                .estado("PENDIENTE") // Estado inicial por defecto
+                .estado("PENDIENTE")
                 .fechaPedido(LocalDateTime.now())
                 .fecha_actualizacion(LocalDateTime.now())
                 .build();
 
+        // Guardamos el pedido para que genere su ID
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
-        for (PedidoDTO.ItemDTO itemDto : dto.getItems()) {
-            ProductoPredisenyado prod = productoRepository.findById(itemDto.getIdProducto())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + itemDto.getIdProducto()));
+        // 3. Procesamos los ítems y restamos el stock (SI EXISTEN)
+        if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+            for (var itemDTO : dto.getItems()) {
+                // Buscamos el producto en la base de datos
+                ProductoPredisenyado prod = productoRepository.findById(itemDTO.getIdProducto())
+                        .orElseThrow(() -> new RuntimeException("Producto con ID " + itemDTO.getIdProducto() + " no encontrado"));
 
-            // Verificar stock
-            if (prod.getStockDisponible() < itemDto.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para el producto: " + prod.getNombreProducto());
+                // Verificamos stock
+                if (prod.getStockDisponible() < itemDTO.getCantidad()) {
+                    throw new RuntimeException("No hay suficiente stock para: " + prod.getNombreProducto());
+                }
+
+                // RESTAMOS EL STOCK
+                prod.setStockDisponible(prod.getStockDisponible() - itemDTO.getCantidad());
+                productoRepository.save(prod);
+
+                // Creamos el ítem del pedido para guardarlo en su tabla (item_pedidos)
+                ItemPedido nuevoItem = ItemPedido.builder()
+                        .pedido(pedidoGuardado)
+                        .producto(prod)
+                        .cantidad(itemDTO.getCantidad())
+                        .precioUnitario(prod.getPrecio())
+                        .build();
+
+                itemPedidoRepository.save(nuevoItem);
             }
-
-            // Restar stock del almacén
-            prod.setStockDisponible(prod.getStockDisponible() - itemDto.getCantidad());
-            productoRepository.save(prod);
-
-            // Crear y guardar la línea del pedido
-            ItemPedido linea = ItemPedido.builder()
-                    .pedido(pedidoGuardado)
-                    .producto(prod)
-                    .cantidad(itemDto.getCantidad())
-                    .precioUnitario(itemDto.getPrecioUnitario())
-                    .build();
-
-            itemPedidoRepository.save(linea);
         }
 
         return pedidoGuardado;
     }
-
 
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
@@ -84,7 +89,6 @@ public class PedidoService {
         return pedidoRepository.findByUsuarioId(idUsuario);
     }
 
-
     @Transactional
     public Pedido actualizarEstado(int idPedido, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(idPedido)
@@ -95,7 +99,6 @@ public class PedidoService {
 
         return pedidoRepository.save(pedido);
     }
-
 
     @Transactional
     public void eliminar(int idPedido) {

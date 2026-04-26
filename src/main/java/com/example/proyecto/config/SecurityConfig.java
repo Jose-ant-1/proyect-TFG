@@ -72,6 +72,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated() // Ver sus propias o admin todas
                         .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN") // Solo admin presupuesta
 
+                        // PAGO
+                        .requestMatchers(HttpMethod.POST, "/api/pagos").authenticated()
+                        .requestMatchers("/api/pagos/**").hasRole("ADMIN")
+
                         // PEDIDOS
                         .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()

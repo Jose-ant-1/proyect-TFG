@@ -5,11 +5,10 @@ import java.util.List;
 
 @Data
 public class PedidoDTO {
-    // Datos de la cabecera
-    private int idUsuario;
+
     private String direccionEnvio;
     private String notaCliente;
-    private double total;
+    private Double total;
 
     private List<ItemDTO> items;
 
