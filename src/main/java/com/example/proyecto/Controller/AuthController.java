@@ -20,38 +20,36 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authManager;
     private final JwtTokenProvider tokenProvider;
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager authManager, JwtTokenProvider tokenProvider) {
-        this.authManager = authManager;
+    public AuthController(JwtTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-            );
-
-            // Buscamos los datos reales del usuario
+            // 1. Buscamos el usuario
             Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Generamos el token
+            // 2. ¡VALIDACIÓN CRÍTICA!: Verificar estado
+            if ("INACTIVO".equals(usuario.getEstado())) {
+                return ResponseEntity.status(403).body("Error: Tu cuenta está desactivada. Contacta con un administrador.");
+            }
+
+            // 3. Generamos el token (solo si está activo)
             String token = tokenProvider.generarToken(loginRequest.getEmail());
 
-            // Devolvemos todo el objeto que espera Angular
             return ResponseEntity.ok(new JwtResponse(
                     token,
                     usuario.getEmail(),
                     usuario.getNombre(),
-                    List.of(usuario.getRol()) // Enviamos el rol como lista para que coincida con tu modelo TS
+                    List.of(usuario.getRol())
             ));
 
         } catch (Exception e) {
@@ -61,6 +59,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registrar(@RequestBody RegistroRequest request) {
+        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: El email ya está registrado");
+        }
+
+        if (request.getNombre() == null || request.getNombre().isBlank() ||
+                request.getEmail() == null || !request.getEmail().contains("@")) {
+            return ResponseEntity.badRequest().body("Error: Datos de registro inválidos");
+        }
+
+        // 2. Validar duplicados (esto ya lo haces bien)
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: El email ya está registrado");
         }

@@ -84,6 +84,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
                         // USUARIOS
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/email/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}").authenticated()
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
                         // CARRITO

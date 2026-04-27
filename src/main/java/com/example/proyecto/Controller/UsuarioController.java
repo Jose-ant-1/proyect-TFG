@@ -51,4 +51,24 @@ public class UsuarioController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Usuario> obtenerPorEmail(@PathVariable String email) {
+        return service.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody String nuevaPassword) {
+        // Si envías el string desde Angular como JSON plano, a veces llega con comillas: "1234"
+        // Esta línea limpia las comillas sobrantes si fuera necesario
+        String passLimpia = nuevaPassword.replace("\"", "");
+
+        if (service.actualizarPassword(id, passLimpia)) {
+            return ResponseEntity.ok().body("{\"mensaje\": \"Contraseña actualizada correctamente\"}");
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

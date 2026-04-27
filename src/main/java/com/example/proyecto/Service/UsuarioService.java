@@ -2,7 +2,6 @@ package com.example.proyecto.Service;
 
 import com.example.proyecto.Model.Usuario;
 import com.example.proyecto.Repository.UsuarioRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,7 @@ public class UsuarioService {
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
+
     public Usuario findById(Integer id) {
         return usuarioRepository.findById(id).orElse(null);
     }
@@ -31,12 +31,21 @@ public class UsuarioService {
         usuario.setContrasenia(encodedPassword);
         return usuarioRepository.save(usuario);
     }
+
     public void delete(Usuario usuario) {
         usuarioRepository.delete(usuario);
     }
 
     public Optional<Usuario> findByEmail(String email) {
             return usuarioRepository.findByEmail(email);
+    }
+
+    public boolean actualizarPassword(Integer id, String nuevaPassword) {
+        return usuarioRepository.findById(id).map(u -> {
+            u.setContrasenia(passwordEncoder.encode(nuevaPassword));
+            usuarioRepository.save(u);
+            return true;
+        }).orElse(false);
     }
 
 }
