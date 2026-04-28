@@ -71,4 +71,13 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/{id}/baja")
+    public ResponseEntity<?> darDeBaja(@PathVariable Integer id) {
+        System.out.println("Recibida petición de baja para ID: " + id); // <--- MIRA TU CONSOLA DE JAVA
+        if (service.darDeBaja(id)) {
+            return ResponseEntity.ok().body("{\"mensaje\": \"Cuenta desactivada correctamente\"}");
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 }

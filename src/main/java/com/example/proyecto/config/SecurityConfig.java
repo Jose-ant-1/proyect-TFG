@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/email/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/baja").authenticated()
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
                         // CARRITO

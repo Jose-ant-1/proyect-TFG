@@ -4,6 +4,7 @@ import com.example.proyecto.Model.Usuario;
 import com.example.proyecto.Repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,16 @@ public class UsuarioService {
         return usuarioRepository.findById(id).map(u -> {
             u.setContrasenia(passwordEncoder.encode(nuevaPassword));
             usuarioRepository.save(u);
+            return true;
+        }).orElse(false);
+    }
+
+  @Transactional // Esta anotación a nivel de método es vital
+    public boolean darDeBaja(Integer id) {
+        return usuarioRepository.findById(id).map(u -> {
+            u.setEstado("INACTIVO");
+            usuarioRepository.saveAndFlush(u); // saveAndFlush fuerza la escritura inmediata
+            System.out.println("DEBUG: Usuario " + id + " cambiado a INACTIVO");
             return true;
         }).orElse(false);
     }

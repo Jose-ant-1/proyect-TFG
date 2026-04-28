@@ -1,5 +1,6 @@
 package com.example.proyecto.Model;
 
+import com.example.proyecto.DTO.UsuarioDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,7 +28,7 @@ public class Valoraciones {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnore
     private Usuario usuario;
 
     @ManyToOne
@@ -42,4 +43,11 @@ public class Valoraciones {
 
     @Column(columnDefinition = "TEXT")
     private String comentario;
+
+    @JsonProperty("usuario")
+    public UsuarioDTO getUsuarioDTO() {
+        if (usuario == null) return null;
+        return new UsuarioDTO(usuario.getId(), usuario.getNombre());
+    }
+
 }
