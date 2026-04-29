@@ -40,7 +40,7 @@ public class PedidoService {
                 .notaCliente(dto.getNotaCliente())
                 .estado("PENDIENTE")
                 .fechaPedido(LocalDateTime.now())
-                .fecha_actualizacion(LocalDateTime.now())
+                .fechaActualizacion(LocalDateTime.now())
                 .build();
 
         // Guardamos el pedido para que genere su ID
@@ -81,8 +81,9 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
-    public Optional<Pedido> buscarPorId(int id) {
-        return pedidoRepository.findById(id);
+    public Pedido buscarPorId(Integer id) {
+        return pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
     }
 
     public List<Pedido> buscarPorUsuario(int idUsuario) {
@@ -95,7 +96,7 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
         pedido.setEstado(nuevoEstado);
-        pedido.setFecha_actualizacion(LocalDateTime.now());
+        pedido.setFechaActualizacion(LocalDateTime.now());
 
         return pedidoRepository.save(pedido);
     }

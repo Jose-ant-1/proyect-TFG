@@ -40,7 +40,7 @@ public class Pedido {
     private LocalDateTime fechaPedido;
 
     @Column(name = "fecha_actualizacion")
-    private LocalDateTime fecha_actualizacion;
+    private LocalDateTime fechaActualizacion;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")

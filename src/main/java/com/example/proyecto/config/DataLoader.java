@@ -115,7 +115,7 @@ public class DataLoader implements CommandLineRunner {
                 .estado("COMPLETADO")
                 .direccionEnvio("Calle Mayor 1, Madrid")
                 .fechaPedido(LocalDateTime.now())
-                .fecha_actualizacion(LocalDateTime.now())
+                .fechaActualizacion(LocalDateTime.now())
                 .build();
         pedidoRepo.save(pedido1);
 

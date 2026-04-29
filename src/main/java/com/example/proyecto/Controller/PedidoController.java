@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -53,24 +55,28 @@ public class PedidoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable int id, Authentication authentication) {
-        Pedido pedido = pedidoService.buscarPorId(id).orElse(null);
+        try {
+            // 1. Quitamos el .orElse(null) porque buscarPorId ya devuelve un Pedido
+            Pedido pedido = pedidoService.buscarPorId(id);
 
-        if (pedido == null) return ResponseEntity.notFound().build();
+            // 2. Lógica de seguridad (mantenemos lo que tenías)
+            String emailUsuarioLogueado = authentication.getName();
+            boolean esAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        // Lógica de seguridad:
-        String emailUsuarioLogueado = authentication.getName();
-        boolean esAdmin = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        boolean esDueño = pedido.getUsuario().getEmail().equals(emailUsuarioLogueado);
+            boolean esDueño = pedido.getUsuario().getEmail().equals(emailUsuarioLogueado);
 
-        if (esAdmin || esDueño) {
-            return ResponseEntity.ok(pedido);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "No tienes permiso para ver este pedido"));
+            if (esAdmin || esDueño) {
+                return ResponseEntity.ok(pedido);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "No tienes permiso para ver este pedido"));
+            }
+        } catch (RuntimeException e) {
+            // 3. Capturamos la excepción que lanza tu service si no encuentra el pedido
+            return ResponseEntity.notFound().build();
         }
     }
-
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody Map<String, String> body) {
         String nuevoEstado = body.get("estado");
@@ -92,5 +98,40 @@ public class PedidoController {
         }
     }
 
+// En PedidoController.java
+
+    @PutMapping("/{id}/reclamar")
+    public ResponseEntity<?> reclamarPedido(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> body,
+            Principal principal
+    ) {
+        String motivo = body.get("motivo");
+        if (motivo == null || motivo.isBlank()) {
+            return ResponseEntity.badRequest().body("{\"error\": \"El motivo es obligatorio\"}");
+        }
+        Pedido pedido = pedidoService.buscarPorId(id);
+
+        // VALIDACIÓN DE 1 DÍA
+        if (pedido.getFechaActualizacion() != null) {
+            // plusDays(1) pone el límite en mañana a la misma hora que se actualizó
+            LocalDateTime limite = pedido.getFechaActualizacion().plusDays(1);
+
+            if (LocalDateTime.now().isAfter(limite)) {
+                return ResponseEntity.badRequest()
+                        .body("{\"error\": \"El plazo de reclamación de 24h ha expirado\"}");
+            }
+        }
+
+        if (!pedido.getUsuario().getEmail().equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        pedido.setNotaCliente("RECLAMACIÓN: " + motivo);
+        pedido.setEstado("RECLAMADO");
+
+        pedidoService.actualizarEstado(id, "RECLAMADO");
+
+        return ResponseEntity.ok().body("{\"mensaje\": \"Reclamación registrada\"}");
+    }
 
 }
