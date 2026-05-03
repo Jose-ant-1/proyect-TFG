@@ -28,8 +28,21 @@ public class UsuarioService {
     }
 
     public Usuario save(Usuario usuario) {
-        String encodedPassword = passwordEncoder.encode(usuario.getContrasenia());
-        usuario.setContrasenia(encodedPassword);
+        if (usuario.getId() != 0) { // Es una edición
+            Usuario usuarioExistente = usuarioRepository.findById(usuario.getId()).orElse(null);
+
+            // Si el admin dejó la contraseña vacía en el formulario
+            if (usuario.getContrasenia() == null || usuario.getContrasenia().isEmpty()) {
+                // Mantenemos el hash que ya teníamos guardado
+                usuario.setContrasenia(usuarioExistente.getContrasenia());
+            } else {
+                // Solo encriptamos si el admin escribió una nueva contraseña
+                usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
+            }
+        } else {
+            // Es un usuario nuevo, encriptamos obligatoriamente
+            usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
+        }
         return usuarioRepository.save(usuario);
     }
 
@@ -57,6 +70,24 @@ public class UsuarioService {
             System.out.println("DEBUG: Usuario " + id + " cambiado a INACTIVO");
             return true;
         }).orElse(false);
+    }
+
+    // En UsuarioService.java
+    @Transactional
+    public Usuario actualizarDatosSinPassword(Usuario detallesNuevos) {
+        Usuario usuarioBD = usuarioRepository.findById(detallesNuevos.getId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Actualizamos solo los campos de perfil
+        usuarioBD.setNombre(detallesNuevos.getNombre());
+        usuarioBD.setApellidos(detallesNuevos.getApellidos());
+        usuarioBD.setTelefono(detallesNuevos.getTelefono());
+        usuarioBD.setDireccion(detallesNuevos.getDireccion());
+        usuarioBD.setCiudad(detallesNuevos.getCiudad());
+        usuarioBD.setCodigoPostal(detallesNuevos.getCodigoPostal());
+        // NO tocamos usuarioBD.setContrasenia()
+
+        return usuarioRepository.save(usuarioBD);
     }
 
 }

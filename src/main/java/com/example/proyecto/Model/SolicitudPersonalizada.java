@@ -65,4 +65,10 @@ public class SolicitudPersonalizada {
     @Column(name = "precio")
     private Double precio; // Usamos Double (objeto) para que pueda ser null hasta que se presupueste
 
+    @PrePersist
+    protected void onCreate() {
+        this.fechaSolicitud = LocalDateTime.now();
+        this.estado = "EVALUANDO";
+    }
+
 }

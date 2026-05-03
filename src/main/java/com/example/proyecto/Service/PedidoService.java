@@ -25,18 +25,28 @@ public class PedidoService {
 
     @Transactional
     public Pedido crearDesdeDTO(PedidoDTO dto, String email) {
-        // 1. Buscamos el usuario por email
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 2. Construimos la entidad Pedido
+        // --- NUEVA LÓGICA: Sincronizar datos con el perfil del usuario ---
+        usuario.setDireccion(dto.getDireccionEnvio());
+        usuario.setCiudad(dto.getCiudadEnvio());
+        // Convertimos el String del DTO al int que espera tu entidad Usuario
+        if (dto.getCodigoPostalEnvio() != null) {
+            usuario.setCodigoPostal(Integer.parseInt(dto.getCodigoPostalEnvio()));
+        }
+        usuarioRepository.save(usuario); // Guardamos los cambios en el perfil
+
+        // 2. Construimos la entidad Pedido (asegúrate de que Pedido.java tenga ciudadEnvio y codigoPostalEnvio)
         Pedido pedido = Pedido.builder()
                 .usuario(usuario)
                 .numeroPedido("PED-" + System.currentTimeMillis())
                 .total(dto.getTotal())
-                .subtotal(dto.getTotal())
-                .gastosEnvio(0.0)
+                .subtotal(dto.getTotal()) // <-- ASEGÚRATE DE ASIGNAR ESTO[cite: 24, 32]
+                .gastosEnvio(0.0)          // <-- Y ESTO TAMBIÉN POR SI ACASO
                 .direccionEnvio(dto.getDireccionEnvio())
+                .ciudadEnvio(dto.getCiudadEnvio())
+                .codigoPostalEnvio(dto.getCodigoPostalEnvio())
                 .notaCliente(dto.getNotaCliente())
                 .estado("PENDIENTE")
                 .fechaPedido(LocalDateTime.now())

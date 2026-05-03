@@ -27,36 +27,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         try {
             String jwt = getJwtFromRequest(request);
 
-            // Usamos "validarToken" porque así está en tu JwtTokenProvider.java
             if (StringUtils.hasText(jwt) && tokenProvider.validarToken(jwt)) {
-
-                // Usamos "getEmailDesdeJWT" porque así está en tu JwtTokenProvider.java
                 String userEmail = tokenProvider.getEmailDesdeJWT(jwt);
 
                 if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Esto llamará al método que editamos arriba y devolverá tu clase Usuario
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-                    if (tokenProvider.validarToken(jwt)) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, // Aquí ahora viaja tu objeto Usuario real
-                                null,
-                                userDetails.getAuthorities()
-                        );
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
+                    // Crea el token con las authorities del usuario (ROLE_CLIENTE)
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    // ESTA ES LA LÍNEA CRÍTICA
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception ex) {
-            logger.error("No se pudo autenticar al usuario", ex);
+            // Loguea el error real para verlo en la consola de Java
+            System.out.println("ERROR AUTH: " + ex.getMessage());
         }
-
-        // OJO: Esta línea DEBE estar fuera del bloque IF para que la petición siga
         filterChain.doFilter(request, response);
     }
 

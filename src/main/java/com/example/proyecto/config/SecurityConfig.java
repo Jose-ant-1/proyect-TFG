@@ -91,6 +91,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/baja").authenticated()
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
+                        // SOLICITUD PERSONALIZADA
+                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN")
+
                         // CARRITO
                         .requestMatchers("/api/carrito/**").authenticated()
 

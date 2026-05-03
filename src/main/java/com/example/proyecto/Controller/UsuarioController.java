@@ -35,8 +35,17 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> update(@PathVariable Integer id, @RequestBody Usuario detalles) {
-        if (service.findById(id) != null) {
+        Usuario usuarioExistente = service.findById(id);
+
+        if (usuarioExistente != null) {
             detalles.setId(id);
+
+            // Si la contraseña viene nula o vacía, usamos el método seguro de "solo datos"
+            if (detalles.getContrasenia() == null || detalles.getContrasenia().isEmpty()) {
+                return ResponseEntity.ok(service.actualizarDatosSinPassword(detalles));
+            }
+
+            // Si realmente se envía una contraseña por esta ruta (opcional), se usa el save normal
             return ResponseEntity.ok(service.save(detalles));
         }
         return ResponseEntity.notFound().build();
@@ -61,9 +70,12 @@ public class UsuarioController {
 
     @PutMapping("/{id}/password")
     public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody String nuevaPassword) {
-        // Si envías el string desde Angular como JSON plano, a veces llega con comillas: "1234"
-        // Esta línea limpia las comillas sobrantes si fuera necesario
-        String passLimpia = nuevaPassword.replace("\"", "");
+        // Angular envía el string y Java lo recibe a veces como ""password""
+        String passLimpia = nuevaPassword.replace("\"", "").trim();
+
+        if (passLimpia.isEmpty()) {
+            return ResponseEntity.badRequest().body("{\"error\": \"La contraseña no puede estar vacía\"}");
+        }
 
         if (service.actualizarPassword(id, passLimpia)) {
             return ResponseEntity.ok().body("{\"mensaje\": \"Contraseña actualizada correctamente\"}");

@@ -7,9 +7,10 @@ import java.util.List;
 public class PedidoDTO {
 
     private String direccionEnvio;
+    private String ciudadEnvio;
+    private String codigoPostalEnvio;
     private String notaCliente;
     private Double total;
-
     private List<ItemDTO> items;
 
     @Data

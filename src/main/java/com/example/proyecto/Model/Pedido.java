@@ -1,6 +1,7 @@
 package com.example.proyecto.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,12 @@ public class Pedido {
     @Column(name = "direccion_envio")
     private String direccionEnvio;
 
+    @Column(name = "ciudad_envio")
+    private String ciudadEnvio;
+
+    @Column(name = "codigo_postal_envio")
+    private String codigoPostalEnvio;
+
     @Column(name = "nota_cliente", columnDefinition = "TEXT")
     private String notaCliente;
 
@@ -48,7 +55,7 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     @ToString.Exclude
-    @JsonIgnore
+    @JsonManagedReference
     private Set<Pago> pagos;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)

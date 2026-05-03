@@ -6,9 +6,9 @@ import com.example.proyecto.Repository.UsuarioRepository;
 import com.example.proyecto.config.JwtTokenProvider;
 import com.example.proyecto.DTO.LoginRequest;
 import com.example.proyecto.DTO.JwtResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,39 +21,61 @@ import java.util.List;
 public class AuthController {
 
     private final JwtTokenProvider tokenProvider;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(JwtTokenProvider tokenProvider) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtTokenProvider tokenProvider,
+                          PasswordEncoder passwordEncoder,
+                          UsuarioRepository usuarioRepository) {
+        this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // 1. Buscamos el usuario
-            Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            // 1. VALIDACIÓN DE CREDENCIALES (Email y Password)
+            // Esto internamente usa tu UserDetailsService y el PasswordEncoder
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-            // 2. ¡VALIDACIÓN CRÍTICA!: Verificar estado
+            // 2. Si llegamos aquí, la contraseña es CORRECTA.
+            // Ahora obtenemos el usuario para revisar tu lógica de estado.
+            Usuario usuario = (Usuario) authentication.getPrincipal();
+
+            // 3. ¡VALIDACIÓN CRÍTICA!: Verificar estado (Como tú lo tenías)
             if ("INACTIVO".equals(usuario.getEstado())) {
-                return ResponseEntity.status(403).body("Error: Tu cuenta está desactivada. Contacta con un administrador.");
+                return ResponseEntity.status(403)
+                        .body("{\"error\": \"Tu cuenta está desactivada. Contacta con un administrador.\"}");
             }
 
-            // 3. Generamos el token (solo si está activo)
-            String token = tokenProvider.generarToken(loginRequest.getEmail());
+            // 4. Generamos el token
+            String token = tokenProvider.generarToken(usuario.getEmail());
 
+            // 5. Respuesta siguiendo tu modelo JwtResponse
             return ResponseEntity.ok(new JwtResponse(
                     token,
+                    usuario.getId(), // Asegúrate de que JwtResponse acepte el ID
                     usuario.getEmail(),
                     usuario.getNombre(),
                     List.of(usuario.getRol())
             ));
 
+        } catch (BadCredentialsException e) {
+            // Error si la contraseña no coincide o el email no existe
+            return ResponseEntity.status(401)
+                    .body("{\"error\": \"Credenciales inválidas\"}");
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Error: Credenciales inválidas");
+            return ResponseEntity.status(500)
+                    .body("{\"error\": \"Error interno del servidor\"}");
         }
     }
 
