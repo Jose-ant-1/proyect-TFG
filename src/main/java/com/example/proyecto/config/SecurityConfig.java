@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated() // Permitir a logueados consultar
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/{id}/confirmar-pago").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/{id}/reclamar").authenticated()
                         .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
@@ -99,6 +100,10 @@ public class SecurityConfig {
 
                         // CARRITO
                         .requestMatchers("/api/carrito/**").authenticated()
+
+                        // ARCHIVO
+                        .requestMatchers(HttpMethod.POST, "/api/archivos").authenticated() // El cliente registra su archivo
+                        .requestMatchers(HttpMethod.GET, "/api/archivos/**").authenticated() // Ambos pueden consultar
 
                         // CUALQUIER OTRA RUTA
                         .anyRequest().authenticated()

@@ -13,7 +13,7 @@ public class ArchivoSolicitud {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_solicitud")
@@ -28,7 +28,7 @@ public class ArchivoSolicitud {
     @Column(nullable = false)
     private String url;
 
-    private double tamanio;
+    private Double tamanio;
 
     @Column(columnDefinition = "TEXT")
     private String notas;

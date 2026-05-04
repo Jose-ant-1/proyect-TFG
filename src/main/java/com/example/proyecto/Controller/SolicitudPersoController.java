@@ -1,6 +1,7 @@
 package com.example.proyecto.Controller;
 
 import com.example.proyecto.Model.SolicitudPersonalizada;
+import com.example.proyecto.Service.PedidoService;
 import com.example.proyecto.Service.SolicitudPersoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,12 @@ import java.util.List;
 public class SolicitudPersoController {
 
     private final SolicitudPersoService service;
+    private final PedidoService pedidoService;
 
-    public SolicitudPersoController(SolicitudPersoService service) {
+
+    public SolicitudPersoController(SolicitudPersoService service, PedidoService pedidoService) {
         this.service = service;
+        this.pedidoService = pedidoService;
     }
 
     @GetMapping
@@ -29,9 +33,14 @@ public class SolicitudPersoController {
     }
 
     @PostMapping
-    public SolicitudPersonalizada create(@RequestBody SolicitudPersonalizada solicitud) {
-        System.out.println("Petición recibida: " + solicitud.getTipoServicio()); // <--- Si esto no sale en consola, el error es el Filtro.
-        return service.save(solicitud);
+    public ResponseEntity<SolicitudPersonalizada> create(@RequestBody SolicitudPersonalizada solicitud) {
+        // 2. Guardamos la solicitud primero
+        SolicitudPersonalizada nuevaSolicitud = service.save(solicitud);
+
+        // 3. Creamos el pedido automáticamente
+        pedidoService.crearDesdeSolicitud(nuevaSolicitud);
+
+        return ResponseEntity.ok(nuevaSolicitud);
     }
     
     @PutMapping("/{id}")

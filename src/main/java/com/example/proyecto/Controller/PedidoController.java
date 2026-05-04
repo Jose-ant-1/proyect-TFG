@@ -77,11 +77,16 @@ public class PedidoController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody Map<String, String> body) {
-        String nuevoEstado = body.get("estado");
+    public ResponseEntity<?> actualizarEstado(@PathVariable int id, @RequestBody Map<String, Object> body) {
         try {
-            Pedido actualizado = pedidoService.actualizarEstado(id, nuevoEstado);
+            String nuevoEstado = (String) body.get("estado");
+            // Extraemos el total si existe en el JSON recibido
+            Double nuevoTotal = body.get("total") != null ? Double.valueOf(body.get("total").toString()) : null;
+
+            // Llamamos a una versión mejorada del service
+            Pedido actualizado = pedidoService.actualizarEstadoYPrecio(id, nuevoEstado, nuevoTotal);
             return ResponseEntity.ok(actualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
@@ -98,7 +103,28 @@ public class PedidoController {
         }
     }
 
-// En PedidoController.java
+    // PedidoController.java[cite: 29]
+    @PostMapping("/{id}/confirmar-pago")
+    public ResponseEntity<?> confirmarPago(@PathVariable int id, Authentication authentication) {
+        try {
+            Pedido pedido = pedidoService.buscarPorId(id);
+            String emailUsuarioLogueado = authentication.getName();
+
+            // SEGURIDAD: Solo el dueño puede activar el pago de su presupuesto[cite: 29]
+            if (!pedido.getUsuario().getEmail().equals(emailUsuarioLogueado)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "No tienes permiso para pagar este pedido"));
+            }
+
+            // Pasamos de PRESUPUESTADO a PENDIENTE internamente[cite: 29]
+            // Usamos el método que ya tienes en el service
+            Pedido actualizado = pedidoService.actualizarEstadoYPrecio(id, "PENDIENTE", null);
+
+            return ResponseEntity.ok(actualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
+    }
 
     @PutMapping("/{id}/reclamar")
     public ResponseEntity<?> reclamarPedido(

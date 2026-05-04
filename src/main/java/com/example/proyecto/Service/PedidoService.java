@@ -87,6 +87,42 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
+    // Añade esto a PedidoService.java
+    @Transactional
+    public Pedido crearDesdeSolicitud(SolicitudPersonalizada solicitud) {
+        Pedido pedido = Pedido.builder()
+                .usuario(solicitud.getUsuario())
+                .numeroPedido("PED-SOL-" + System.currentTimeMillis())
+                .subtotal(0.0)
+                .gastosEnvio(0.0)
+                .total(0.0)
+                .estado("EVALUANDO") // Estado inicial compartido
+                .direccionEnvio(solicitud.getUsuario().getDireccion()) // Sacamos los datos del perfil
+                .ciudadEnvio(solicitud.getUsuario().getCiudad())
+                .codigoPostalEnvio(String.valueOf(solicitud.getUsuario().getCodigoPostal()))
+                .notaCliente("Solicitud Personalizada: " + solicitud.getNumeroSolicitud())
+                .fechaPedido(LocalDateTime.now())
+                .fechaActualizacion(LocalDateTime.now())
+                .build();
+
+        return pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public Pedido actualizarEstadoYPrecio(int idPedido, String nuevoEstado, Double nuevoTotal) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        pedido.setEstado(nuevoEstado);
+        if (nuevoTotal != null) {
+            pedido.setTotal(nuevoTotal);
+            pedido.setSubtotal(nuevoTotal); // Sincronizamos ambos campos
+        }
+        pedido.setFechaActualizacion(LocalDateTime.now());
+
+        return pedidoRepository.save(pedido);
+    }
+
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
     }
