@@ -30,9 +30,10 @@ public class SolicitudPersoController {
 
     @PostMapping
     public SolicitudPersonalizada create(@RequestBody SolicitudPersonalizada solicitud) {
+        System.out.println("Petición recibida: " + solicitud.getTipoServicio()); // <--- Si esto no sale en consola, el error es el Filtro.
         return service.save(solicitud);
     }
-
+    
     @PutMapping("/{id}")
     public ResponseEntity<SolicitudPersonalizada> update(@PathVariable Integer id, @RequestBody SolicitudPersonalizada detalles) {
         if (service.findById(id) != null) {

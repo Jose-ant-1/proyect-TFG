@@ -68,7 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
 
                         // SOLICITUDES PERSONALIZADAS
-                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").hasRole("USER") // Solo clientes crean
+                        // Cambia esto en SecurityConfig.java
+                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated() // Ver sus propias o admin todas
                         .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN") // Solo admin presupuesta
 

@@ -23,7 +23,7 @@ public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -38,7 +38,7 @@ public class Usuario implements UserDetails {
     private String ciudad;
 
     @Column(name = "codigo_postal")
-    private int codigoPostal;
+    private Integer codigoPostal;
 
     private String rol;
     private String estado;

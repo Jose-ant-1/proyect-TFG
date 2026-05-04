@@ -1,5 +1,6 @@
 package com.example.proyecto.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +17,7 @@ public class SolicitudPersonalizada {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
@@ -45,6 +46,7 @@ public class SolicitudPersonalizada {
     private String acabado;
     private String estado;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "fecha_solicitud")
     private LocalDateTime fechaSolicitud;
 
@@ -67,8 +69,12 @@ public class SolicitudPersonalizada {
 
     @PrePersist
     protected void onCreate() {
-        this.fechaSolicitud = LocalDateTime.now();
-        this.estado = "EVALUANDO";
+        if (this.fechaSolicitud == null) {
+            this.fechaSolicitud = java.time.LocalDateTime.now();
+        }
+        if (this.estado == null) {
+            this.estado = "EVALUANDO";
+        }
     }
 
 }
