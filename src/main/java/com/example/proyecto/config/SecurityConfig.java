@@ -43,70 +43,76 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Desactivar explícitamente primero
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ACCESO PÚBLICO Y CONFIGURACIÓN GLOBAL
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/error").permitAll()
+                                // ACCESO PÚBLICO Y CONFIGURACIÓN GLOBAL
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/error").permitAll()
 
-                        // VALORACIONES
-                        .requestMatchers(HttpMethod.GET, "/api/valoraciones/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/valoraciones/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/valoraciones/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/valoraciones/**").authenticated()
+                                // VALORACIONES
+                                .requestMatchers(HttpMethod.GET, "/api/valoraciones/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/valoraciones/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/valoraciones/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/valoraciones/**").authenticated()
 
-                        // PRODUCTOS PREDISEÑADOS
-                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
+                                // PRODUCTOS PREDISEÑADOS
+                                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/productos/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
 
-                        // MATERIALES Y TECNOLOGÍAS
-                        .requestMatchers(HttpMethod.GET, "/api/materiales/**", "/api/tecnologias/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+                                // MATERIALES Y TECNOLOGÍAS
+                                .requestMatchers(HttpMethod.GET, "/api/materiales/**", "/api/tecnologias/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/materiales/**", "/api/tecnologias/**").hasRole("ADMIN")
 
-                        // SOLICITUDES PERSONALIZADAS
-                        // Cambia esto en SecurityConfig.java
-                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated() // Ver sus propias o admin todas
-                        .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN") // Solo admin presupuesta
+                                // SOLICITUDES PERSONALIZADAS
+                                // Cambia esto en SecurityConfig.java
+                                .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated() // Ver sus propias o admin todas
+                                .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN") // Solo admin presupuesta
 
-                        // PAGO
-                        .requestMatchers(HttpMethod.POST, "/api/pagos").authenticated()
-                        .requestMatchers("/api/pagos/**").hasRole("ADMIN")
+                                // PAGO
+                                .requestMatchers(HttpMethod.POST, "/api/pagos").authenticated()
+                                .requestMatchers("/api/pagos/**").hasRole("ADMIN")
 
-                        // PEDIDOS
-                        .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated() // Permitir a logueados consultar
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos/{id}/confirmar-pago").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/{id}/reclamar").authenticated()
-                        .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
+                                // PEDIDOS
+                                .requestMatchers("/api/pedidos/mis-pedidos").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated() // Permitir a logueados consultar
+                                .requestMatchers(HttpMethod.GET, "/api/pedidos/{id}").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/pedidos/{id}/confirmar-pago").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/pedidos/{id}/reclamar").authenticated()
+                                .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
 
-                        // USUARIOS
-                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/email/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/baja").authenticated()
-                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                                // USUARIOS
+                                .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/usuarios/email/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/baja").authenticated()
+                                .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
-                        // SOLICITUD PERSONALIZADA
-                        .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN")
+                                // SOLICITUD PERSONALIZADA
+                                .requestMatchers(HttpMethod.POST, "/api/solicitudes/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/solicitudes/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/solicitudes/**").hasRole("ADMIN")
 
-                        // CARRITO
-                        .requestMatchers("/api/carrito/**").authenticated()
+                                // CARRITO
+                                .requestMatchers("/api/carrito/**").authenticated()
 
-                        // ARCHIVO
-                        .requestMatchers(HttpMethod.POST, "/api/archivos").authenticated() // El cliente registra su archivo
-                        .requestMatchers(HttpMethod.GET, "/api/archivos/**").authenticated() // Ambos pueden consultar
+// ARCHIVO
+// 1. Permitimos el acceso a cualquier usuario autenticado (luego el controlador filtrará)
+                                .requestMatchers(HttpMethod.GET, "/api/archivos/download/**").authenticated()
 
-                        // CUALQUIER OTRA RUTA
-                        .anyRequest().authenticated()
+// 2. Rutas de consulta generales (Lista de archivos)
+                                .requestMatchers(HttpMethod.GET, "/api/archivos/**").authenticated()
+
+// 3. Las de subida
+                                .requestMatchers(HttpMethod.POST, "/api/archivos/**").authenticated()
+
+                                // CUALQUIER OTRA RUTA
+                                .anyRequest().authenticated()
                 )
                 // usar el metodo del Bean para asegurar que se inyecta bien
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
