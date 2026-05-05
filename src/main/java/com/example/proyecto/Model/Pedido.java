@@ -40,7 +40,7 @@ public class Pedido {
     @Column(name = "codigo_postal_envio")
     private String codigoPostalEnvio;
 
-    @Column(name = "nota_clientecambios necesario para que funcione crear solicitudPErsonalizada. RECORDAR ELIMINAR CAMPO URGENTE", columnDefinition = "TEXT")
+    @Column(name = "nota_cliente", columnDefinition = "TEXT")
     private String notaCliente;
 
     @Column(name = "fecha_pedido")
