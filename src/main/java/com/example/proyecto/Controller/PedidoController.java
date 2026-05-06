@@ -160,4 +160,30 @@ public class PedidoController {
         return ResponseEntity.ok().body("{\"mensaje\": \"Reclamación registrada\"}");
     }
 
+    // En PedidoController.java
+
+    @PatchMapping("/{id}/actualizar-envio")
+    public ResponseEntity<?> actualizarDatosEnvio(@PathVariable int id, @RequestBody Map<String, String> datos, Authentication authentication) {
+        try {
+            Pedido pedido = pedidoService.buscarPorId(id);
+            String emailUsuarioLogueado = authentication.getName();
+
+            // Seguridad: Solo el dueño puede cambiar sus datos de envío
+            if (!pedido.getUsuario().getEmail().equals(emailUsuarioLogueado)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            // Actualizamos los campos
+            if (datos.containsKey("direccionEnvio")) pedido.setDireccionEnvio(datos.get("direccionEnvio"));
+            if (datos.containsKey("ciudadEnvio")) pedido.setCiudadEnvio(datos.get("ciudadEnvio"));
+            if (datos.containsKey("codigoPostalEnvio")) pedido.setCodigoPostalEnvio(datos.get("codigoPostalEnvio"));
+            if (datos.containsKey("notaCliente")) pedido.setNotaCliente(datos.get("notaCliente"));
+
+            pedidoService.actualizarEstado(id, pedido.getEstado()); // Usamos el save interno
+            return ResponseEntity.ok(pedido);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

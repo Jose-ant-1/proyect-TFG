@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PedidoService {
@@ -87,24 +86,16 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
-    // Añade esto a PedidoService.java
     @Transactional
     public Pedido crearDesdeSolicitud(SolicitudPersonalizada solicitud) {
         Pedido pedido = Pedido.builder()
                 .usuario(solicitud.getUsuario())
-                .numeroPedido("PED-SOL-" + System.currentTimeMillis())
+                // CAMBIO AQUÍ: Metemos el número de solicitud directamente en el ID del pedido
+                .numeroPedido("PED-" + solicitud.getNumeroSolicitud())
                 .subtotal(0.0)
-                .gastosEnvio(0.0)
-                .total(0.0)
-                .estado("EVALUANDO") // Estado inicial compartido
-                .direccionEnvio(solicitud.getUsuario().getDireccion()) // Sacamos los datos del perfil
-                .ciudadEnvio(solicitud.getUsuario().getCiudad())
-                .codigoPostalEnvio(String.valueOf(solicitud.getUsuario().getCodigoPostal()))
-                .notaCliente("Solicitud Personalizada: " + solicitud.getNumeroSolicitud())
-                .fechaPedido(LocalDateTime.now())
-                .fechaActualizacion(LocalDateTime.now())
+                // ... resto del código igual ...
+                .notaCliente(solicitud.getNumeroSolicitud()) // Guardamos el SOL temporalmente aquí
                 .build();
-
         return pedidoRepository.save(pedido);
     }
 
@@ -124,7 +115,8 @@ public class PedidoService {
     }
 
     public List<Pedido> listarTodos() {
-        return pedidoRepository.findAll();
+        // Usamos el nuevo método con orden descendente
+        return pedidoRepository.findAllByOrderByFechaPedidoDesc();
     }
 
     public Pedido buscarPorId(Integer id) {
@@ -132,19 +124,15 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
     }
 
-    public List<Pedido> buscarPorUsuario(int idUsuario) {
-        return pedidoRepository.findByUsuarioId(idUsuario);
-    }
-
     @Transactional
-    public Pedido actualizarEstado(int idPedido, String nuevoEstado) {
+    public void actualizarEstado(int idPedido, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
         pedido.setEstado(nuevoEstado);
         pedido.setFechaActualizacion(LocalDateTime.now());
 
-        return pedidoRepository.save(pedido);
+        pedidoRepository.save(pedido);
     }
 
     @Transactional
@@ -166,12 +154,13 @@ public class PedidoService {
     }
 
     public List<Pedido> buscarPorEmailUsuario(String email) {
-        // 1. Buscamos al usuario por su email
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
-        // 2. Usamos el método que ya tienes en el repository para filtrar por su ID
-        return pedidoRepository.findByUsuarioId(usuario.getId());
+        // Usamos el nuevo método que ordena por fecha
+        return pedidoRepository.findByUsuarioIdOrderByFechaPedidoDesc(usuario.getId());
     }
+
+
 
 }
