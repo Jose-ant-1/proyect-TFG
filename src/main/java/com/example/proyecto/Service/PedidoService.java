@@ -86,16 +86,23 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
+// En PedidoService.java
+
     @Transactional
     public Pedido crearDesdeSolicitud(SolicitudPersonalizada solicitud) {
         Pedido pedido = Pedido.builder()
                 .usuario(solicitud.getUsuario())
-                // CAMBIO AQUÍ: Metemos el número de solicitud directamente en el ID del pedido
                 .numeroPedido("PED-" + solicitud.getNumeroSolicitud())
+                // ESTOS CAMPOS NO PUEDEN SER NULL:
                 .subtotal(0.0)
-                // ... resto del código igual ...
-                .notaCliente(solicitud.getNumeroSolicitud()) // Guardamos el SOL temporalmente aquí
+                .gastosEnvio(0.0)
+                .total(0.0) // <--- ESTO ARREGLA EL ERROR 500
+                .estado("EVALUANDO")
+                .fechaPedido(LocalDateTime.now())
+                .fechaActualizacion(LocalDateTime.now())
+                // Guardamos el SOL-XXX en la nota para tenerlo localizado hasta el pago
                 .build();
+
         return pedidoRepository.save(pedido);
     }
 
