@@ -28,19 +28,22 @@ public class UsuarioService {
     }
 
     public Usuario save(Usuario usuario) {
-        if (usuario.getId() != 0) { // Es una edición
+        // CAMBIO CLAVE: Comprobamos si el ID es distinto de null
+        if (usuario.getId() != null) { // Es una edición (ya tiene un ID asignado)
             Usuario usuarioExistente = usuarioRepository.findById(usuario.getId()).orElse(null);
 
             // Si el admin dejó la contraseña vacía en el formulario
             if (usuario.getContrasenia() == null || usuario.getContrasenia().isEmpty()) {
-                // Mantenemos el hash que ya teníamos guardado
-                usuario.setContrasenia(usuarioExistente.getContrasenia());
+                if (usuarioExistente != null) {
+                    // Mantenemos el hash que ya teníamos guardado
+                    usuario.setContrasenia(usuarioExistente.getContrasenia());
+                }
             } else {
                 // Solo encriptamos si el admin escribió una nueva contraseña
                 usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
             }
         } else {
-            // Es un usuario nuevo, encriptamos obligatoriamente
+            // Es un usuario nuevo (ID es null), encriptamos obligatoriamente
             usuario.setContrasenia(passwordEncoder.encode(usuario.getContrasenia()));
         }
         return usuarioRepository.save(usuario);
