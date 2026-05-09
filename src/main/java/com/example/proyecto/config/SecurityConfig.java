@@ -34,7 +34,7 @@ public class SecurityConfig {
                 // CORS: Configuración explícita para evitar el error del log anterior
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost", "http://localhost:4200"));
+                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost", "http://localhost:4200", "http://127.0.0.1"));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
                     corsConfiguration.setAllowCredentials(true);
