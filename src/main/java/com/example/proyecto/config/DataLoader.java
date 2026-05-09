@@ -52,7 +52,6 @@ public class DataLoader implements CommandLineRunner {
 
         // 1. USUARIO
         Usuario admin = Usuario.builder()
-                .id(1)
                 .nombre("Admin")
                 .apellidos("García Pérez")
                 .email("admin@tienda3d.com")
