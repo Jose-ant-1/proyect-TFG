@@ -65,9 +65,10 @@ public class ArchivoSolicitudController {
     public ResponseEntity<?> uploadArchivo(
             @RequestParam("file") MultipartFile file,
             @RequestParam("solicitudId") Integer solicitudId) {
+
         try {
             // 1. Definir la ruta de la carpeta (puedes usar una ruta absoluta si prefieres)
-            String carpetaUploads = "uploads";
+            String carpetaUploads = "/app/data/uploads";
             Path directorioPath = Paths.get(carpetaUploads);
 
             // Crear la carpeta si no existe
