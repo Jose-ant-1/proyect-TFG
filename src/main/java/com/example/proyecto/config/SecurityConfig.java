@@ -37,7 +37,7 @@ public class SecurityConfig {
                     corsConfiguration.setAllowedOrigins(java.util.List.of(
                             "http://localhost",
                             "http://localhost:4200",
-                            "https://permissions-staffing-scotland-logic.trycloudflare.com" // <-- VERIFICA ESTA URL
+                            "https://accessory-questionnaire-trailer-garbage.trycloudflare.com" // <-- VERIFICA ESTA URL
                     ));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
