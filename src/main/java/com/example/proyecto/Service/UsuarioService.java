@@ -28,8 +28,8 @@ public class UsuarioService {
     }
 
     public Usuario save(Usuario usuario) {
-        // CAMBIO CLAVE: Comprobamos si el ID es distinto de null
-        if (usuario.getId() != null) { // Es una edición (ya tiene un ID asignado)
+        // Comprobamos si el ID es distinto de null
+        if (usuario.getId() != null) { // Es una edición, ya tiene un ID asignado
             Usuario usuarioExistente = usuarioRepository.findById(usuario.getId()).orElse(null);
 
             // Si el admin dejó la contraseña vacía en el formulario
@@ -65,7 +65,7 @@ public class UsuarioService {
         }).orElse(false);
     }
 
-  @Transactional // Esta anotación a nivel de método es vital
+  @Transactional
     public boolean darDeBaja(Integer id) {
         return usuarioRepository.findById(id).map(u -> {
             u.setEstado("INACTIVO");
@@ -75,7 +75,6 @@ public class UsuarioService {
         }).orElse(false);
     }
 
-    // En UsuarioService.java
     @Transactional
     public Usuario actualizarDatosSinPassword(Usuario detallesNuevos) {
         Usuario usuarioBD = usuarioRepository.findById(detallesNuevos.getId())
@@ -88,7 +87,6 @@ public class UsuarioService {
         usuarioBD.setDireccion(detallesNuevos.getDireccion());
         usuarioBD.setCiudad(detallesNuevos.getCiudad());
         usuarioBD.setCodigoPostal(detallesNuevos.getCodigoPostal());
-        // NO tocamos usuarioBD.setContrasenia()
 
         return usuarioRepository.save(usuarioBD);
     }

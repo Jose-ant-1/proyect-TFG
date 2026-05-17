@@ -19,13 +19,13 @@ public class ElementoCarritoService {
     public ElementoCarrito agregarItem(Usuario usuario, ProductoPredisenyado producto, int cantidad) {
         Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
 
-        // 1. BUSCAR si el producto ya está en el carrito de este usuario
+        // BUSCAR si el producto ya está en el carrito de este usuario
         Optional<ElementoCarrito> itemExistente = carrito.getElementos().stream()
                 .filter(e -> e.getProducto() != null && e.getProducto().getId().equals(producto.getId()))
                 .findFirst();
 
         if (itemExistente.isPresent()) {
-            // 2. SI EXISTE: Actualizamos la cantidad (sumamos la nueva cantidad, que puede ser 1 o -1)
+            // SI EXISTE: Actualizamos la cantidad (sumamos la nueva cantidad, que puede ser 1 o -1)
             ElementoCarrito item = itemExistente.get();
             int nuevaCantidad = item.getCantidad() + cantidad;
 
@@ -39,7 +39,7 @@ public class ElementoCarritoService {
             item.setCantidad(nuevaCantidad);
             return elementoRepository.save(item);
         } else {
-            // 3. SI NO EXISTE: Lo creamos de cero (solo si la cantidad es positiva)
+            // SI NO EXISTE: Lo creamos de cero (solo si la cantidad es positiva)
             if (cantidad <= 0) return null;
 
             ElementoCarrito nuevoItem = ElementoCarrito.builder()
@@ -54,10 +54,9 @@ public class ElementoCarritoService {
         }
     }
 
-    // ELIMINAR: Delete
     @Transactional
     public void eliminarItem(Long id) {
-        // Añade un log aquí para ver si el ID llega bien a la consola de IntelliJ
+        // para ver si el ID llega bien a la consola de IntelliJ
         System.out.println("Intentando eliminar elemento de carrito con ID: " + id);
         elementoRepository.deleteById(id);
     }

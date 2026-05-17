@@ -29,7 +29,7 @@ public class TecnologiaImpresion {
     @Column(columnDefinition = "TEXT")
     private String especificacion;
 
-    private boolean disponible;
+    private Boolean disponible;
 
     @OneToMany(mappedBy = "tecnologia")
     @ToString.Exclude

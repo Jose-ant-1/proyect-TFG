@@ -31,20 +31,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CORS: Configuración explícita para evitar el error del log anterior
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
                     corsConfiguration.setAllowedOrigins(java.util.List.of(
                             "http://localhost",
-                            "http://localhost:4200",
-                            "https://soundtrack-ton-ruled-brick.trycloudflare.com"
+                            "http://localhost:4200"
+                            //"https://soundtrack-ton-ruled-brick.trycloudflare.com"
                     ));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-                .csrf(AbstractHttpConfigurer::disable) // Desactivar explícitamente primero
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // ACCESO PÚBLICO Y CONFIGURACIÓN GLOBAL

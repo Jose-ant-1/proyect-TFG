@@ -34,10 +34,10 @@ public class SolicitudPersoController {
 
     @PostMapping
     public ResponseEntity<SolicitudPersonalizada> create(@RequestBody SolicitudPersonalizada solicitud) {
-        // 2. Guardamos la solicitud primero
+        // Guardamos la solicitud primero
         SolicitudPersonalizada nuevaSolicitud = service.save(solicitud);
 
-        // 3. Creamos el pedido automáticamente
+        // Creamos el pedido
         pedidoService.crearDesdeSolicitud(nuevaSolicitud);
 
         return ResponseEntity.ok(nuevaSolicitud);

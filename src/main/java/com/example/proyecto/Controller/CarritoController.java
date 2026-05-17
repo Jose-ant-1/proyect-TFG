@@ -20,7 +20,7 @@ public class CarritoController {
 
     @PostMapping("/add/{productoId}")
     public ResponseEntity<?> agregarItem(
-            @AuthenticationPrincipal Usuario usuario, // Spring lo inyecta directamente
+            @AuthenticationPrincipal Usuario usuario,
             @PathVariable Integer productoId,
             @RequestParam(defaultValue = "1") int cantidad) {
 

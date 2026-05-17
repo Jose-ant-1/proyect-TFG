@@ -21,12 +21,12 @@ public class ItemPedido {
     @JsonIgnore
     private Pedido pedido;
 
-    // Relación con producto estándar (ahora es opcional)
+    // opcional
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = true)
     private ProductoPredisenyado producto;
 
-    // NUEVO: Relación con solicitud personalizada (opcional)
+    // opcional
     @OneToOne
     @JoinColumn(name = "id_solicitud", nullable = true)
     private SolicitudPersonalizada solicitud;

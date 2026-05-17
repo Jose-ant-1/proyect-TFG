@@ -42,16 +42,15 @@ public class ValoracionesController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 1. Extraer el email del token
+        // Extraer el email del token
         String email = authentication.getName();
 
-        // 2. Buscar el usuario y manejar el Optional
+        // Buscar el usuario y manejar el Optional
         // .orElseThrow() lanzará una excepción si no encuentra al usuario,
-        // o puedes usar .orElse(null) si prefieres manejarlo de otra forma.
         Usuario usuario = usuarioService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
-        // 3. Asignar el usuario a la valoración antes de guardar
+        // Asignar el usuario a la valoración antes de guardar
         valoracion.setUsuario(usuario);
         valoracion.setFechaValoracion(java.time.LocalDate.now());
 
@@ -82,7 +81,6 @@ public class ValoracionesController {
         List<Valoraciones> lista = service.findByProducto(productoId);
 
         // Si no hay valoraciones, devolvemos una lista vacía con 200 OK
-        // (o podrías devolver 204 No Content si lo prefieres)
         return ResponseEntity.ok(lista);
     }
 

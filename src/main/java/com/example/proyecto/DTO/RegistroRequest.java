@@ -8,5 +8,5 @@ public class RegistroRequest {
     private String apellidos;
     private String email;
     private String telefono;
-    private String contrasenia; // Aquí usamos password para que sea amigable con el front
+    private String contrasenia;
 }

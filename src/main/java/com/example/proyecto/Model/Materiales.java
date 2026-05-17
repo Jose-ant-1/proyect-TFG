@@ -40,7 +40,7 @@ public class Materiales {
     @Column(columnDefinition = "TEXT")
     private String propiedades;
 
-    private boolean disponible;
+    private Boolean disponible;
 
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion = LocalDate.now();

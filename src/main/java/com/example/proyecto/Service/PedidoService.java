@@ -27,22 +27,22 @@ public class PedidoService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // --- NUEVA LÓGICA: Sincronizar datos con el perfil del usuario ---
+        // Sincronizar datos con el perfil del usuario
         usuario.setDireccion(dto.getDireccionEnvio());
         usuario.setCiudad(dto.getCiudadEnvio());
-        // Convertimos el String del DTO al int que espera tu entidad Usuario
+        // Convertimos el String del DTO al int que espera la entidad Usuario
         if (dto.getCodigoPostalEnvio() != null) {
             usuario.setCodigoPostal(Integer.parseInt(dto.getCodigoPostalEnvio()));
         }
         usuarioRepository.save(usuario); // Guardamos los cambios en el perfil
 
-        // 2. Construimos la entidad Pedido (asegúrate de que Pedido.java tenga ciudadEnvio y codigoPostalEnvio)
+        // Construimos la entidad Pedido
         Pedido pedido = Pedido.builder()
                 .usuario(usuario)
                 .numeroPedido("PED-" + System.currentTimeMillis())
                 .total(dto.getTotal())
-                .subtotal(dto.getTotal()) // <-- ASEGÚRATE DE ASIGNAR ESTO[cite: 24, 32]
-                .gastosEnvio(0.0)          // <-- Y ESTO TAMBIÉN POR SI ACASO
+                .subtotal(dto.getTotal())
+                .gastosEnvio(0.0)
                 .direccionEnvio(dto.getDireccionEnvio())
                 .ciudadEnvio(dto.getCiudadEnvio())
                 .codigoPostalEnvio(dto.getCodigoPostalEnvio())
@@ -55,7 +55,7 @@ public class PedidoService {
         // Guardamos el pedido para que genere su ID
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
-        // 3. Procesamos los ítems y restamos el stock (SI EXISTEN)
+        // Procesamos los ítems y restamos el stock SI EXISTEN
         if (dto.getItems() != null && !dto.getItems().isEmpty()) {
             for (var itemDTO : dto.getItems()) {
                 // Buscamos el producto en la base de datos
@@ -86,24 +86,24 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
-// En PedidoService.java
-
     @Transactional
-    public Pedido crearDesdeSolicitud(SolicitudPersonalizada solicitud) {
+    public void crearDesdeSolicitud(SolicitudPersonalizada solicitud) {
+        // inicializar todos los campos numéricos y de estado
         Pedido pedido = Pedido.builder()
                 .usuario(solicitud.getUsuario())
                 .numeroPedido("PED-" + solicitud.getNumeroSolicitud())
-                // ESTOS CAMPOS NO PUEDEN SER NULL:
                 .subtotal(0.0)
                 .gastosEnvio(0.0)
-                .total(0.0) // <--- ESTO ARREGLA EL ERROR 500
+                .total(0.0)
                 .estado("EVALUANDO")
                 .fechaPedido(LocalDateTime.now())
                 .fechaActualizacion(LocalDateTime.now())
-                // Guardamos el SOL-XXX en la nota para tenerlo localizado hasta el pago
+                .direccionEnvio("")
+                .ciudadEnvio("")
+                .codigoPostalEnvio("")
                 .build();
 
-        return pedidoRepository.save(pedido);
+        pedidoRepository.save(pedido);
     }
 
     @Transactional
@@ -114,7 +114,7 @@ public class PedidoService {
         pedido.setEstado(nuevoEstado);
         if (nuevoTotal != null) {
             pedido.setTotal(nuevoTotal);
-            pedido.setSubtotal(nuevoTotal); // Sincronizamos ambos campos
+            pedido.setSubtotal(nuevoTotal);
         }
         pedido.setFechaActualizacion(LocalDateTime.now());
 
@@ -122,7 +122,6 @@ public class PedidoService {
     }
 
     public List<Pedido> listarTodos() {
-        // Usamos el nuevo método con orden descendente
         return pedidoRepository.findAllByOrderByFechaPedidoDesc();
     }
 

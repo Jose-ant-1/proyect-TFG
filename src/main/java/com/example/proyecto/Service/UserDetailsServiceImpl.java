@@ -5,7 +5,6 @@ import com.example.proyecto.Repository.UsuarioRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,8 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // DEBUG para verificar que llegamos aquí
         System.out.println("Cargando usuario desde DB para seguridad: " + usuario.getEmail());
 
-        // DEBES DEVOLVER TU ENTIDAD USUARIO
-        // (Asegúrate de que la clase Usuario implemente UserDetails)
+        // DEBE DEVOLVER ENTIDAD USUARIO
         return usuario;
     }
 }

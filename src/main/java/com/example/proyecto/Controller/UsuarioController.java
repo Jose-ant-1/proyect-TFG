@@ -40,12 +40,12 @@ public class UsuarioController {
         if (usuarioExistente != null) {
             detalles.setId(id);
 
-            // Si la contraseña viene nula o vacía, usamos el método seguro de "solo datos"
+            // Si la contraseña viene nula o vacía, usamos el método de "solo datos"
             if (detalles.getContrasenia() == null || detalles.getContrasenia().isEmpty()) {
                 return ResponseEntity.ok(service.actualizarDatosSinPassword(detalles));
             }
 
-            // Si realmente se envía una contraseña por esta ruta (opcional), se usa el save normal
+            // envía una contraseña por esta ruta (opcional), se usa el save normal
             return ResponseEntity.ok(service.save(detalles));
         }
         return ResponseEntity.notFound().build();
@@ -70,7 +70,6 @@ public class UsuarioController {
 
     @PutMapping("/{id}/password")
     public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody String nuevaPassword) {
-        // Angular envía el string y Java lo recibe a veces como ""password""
         String passLimpia = nuevaPassword.replace("\"", "").trim();
 
         if (passLimpia.isEmpty()) {
@@ -85,7 +84,7 @@ public class UsuarioController {
 
     @PutMapping("/{id}/baja")
     public ResponseEntity<?> darDeBaja(@PathVariable Integer id) {
-        System.out.println("Recibida petición de baja para ID: " + id); // <--- MIRA TU CONSOLA DE JAVA
+        System.out.println("Recibida petición de baja para ID: " + id);
         if (service.darDeBaja(id)) {
             return ResponseEntity.ok().body("{\"mensaje\": \"Cuenta desactivada correctamente\"}");
         }

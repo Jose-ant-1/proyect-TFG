@@ -65,7 +65,7 @@ public class SolicitudPersonalizada {
     private Set<Pago> pagos;
 
     @Column(name = "precio")
-    private Double precio; // Usamos Double (objeto) para que pueda ser null hasta que se presupueste
+    private Double precio;
 
     @PrePersist
     protected void onCreate() {

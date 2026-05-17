@@ -36,14 +36,14 @@ public class PagoController {
 
     @PostMapping
     public Pago create(@RequestBody Pago pago, Authentication authentication) {
-        // 1. Identidad segura: sacamos el email del token
+        // sacamos el email del token
         String email = authentication.getName();
 
-        // 2. Buscamos el usuario
+        // Buscamos el usuario
         Usuario usuario = usuarioService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 3. Asignamos los datos que faltan en el servidor
+        // Asignamos los datos que faltan en el servidor
         pago.setUsuario(usuario);
 
         // Forzamos las fechas para evitar errores de parseo JSON

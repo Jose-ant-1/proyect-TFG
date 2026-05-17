@@ -39,8 +39,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // 1. VALIDACIÓN DE CREDENCIALES (Email y Password)
-            // Esto internamente usa tu UserDetailsService y el PasswordEncoder
+            // validación Email y Password
+            // Esto internamente usa UserDetailsService y el PasswordEncoder
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
@@ -48,23 +48,24 @@ public class AuthController {
                     )
             );
 
-            // 2. Si llegamos aquí, la contraseña es CORRECTA.
-            // Ahora obtenemos el usuario para revisar tu lógica de estado.
+            // Si llegamos aquí, la contraseña es CORRECTA.
+            // Ahora obtenemos el usuario para revisar la lógica de estado.
             Usuario usuario = (Usuario) authentication.getPrincipal();
 
-            // 3. ¡VALIDACIÓN CRÍTICA!: Verificar estado (Como tú lo tenías)
+            // Verificar estado
+            assert usuario != null;
             if ("INACTIVO".equals(usuario.getEstado())) {
                 return ResponseEntity.status(403)
                         .body("{\"error\": \"Tu cuenta está desactivada. Contacta con un administrador.\"}");
             }
 
-            // 4. Generamos el token
+            // Generamos el token
             String token = tokenProvider.generarToken(usuario.getEmail());
 
-            // 5. Respuesta siguiendo tu modelo JwtResponse
+            // Respuesta siguiendo el modelo JwtResponse
             return ResponseEntity.ok(new JwtResponse(
                     token,
-                    usuario.getId(), // Asegúrate de que JwtResponse acepte el ID
+                    usuario.getId(),
                     usuario.getEmail(),
                     usuario.getNombre(),
                     List.of(usuario.getRol())
@@ -91,18 +92,17 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Datos de registro inválidos");
         }
 
-        // 2. Validar duplicados (esto ya lo haces bien)
+        // Validar duplicados
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: El email ya está registrado");
         }
 
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
-        usuario.setApellidos(request.getApellidos()); // ¡No te olvides de este!
+        usuario.setApellidos(request.getApellidos());
         usuario.setEmail(request.getEmail());
-        usuario.setTelefono(request.getTelefono());   // ¡Y este!
+        usuario.setTelefono(request.getTelefono());
 
-        // Aquí usamos el nombre que definimos en el DTO
         usuario.setContrasenia(passwordEncoder.encode(request.getContrasenia()));
 
         usuario.setRol("CLIENTE");

@@ -7,14 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CarritoService {
 
     private final CarritoRepository carritoRepository;
-    private final ElementoCarritoRepository elementoRepository;
 
     // Obtener el carrito de un usuario (y crearlo si no tiene uno)
     public Carrito obtenerCarritoPorUsuario(Usuario usuario) {

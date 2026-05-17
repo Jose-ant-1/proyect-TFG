@@ -42,7 +42,6 @@ public class ProdPredisController {
         return ResponseEntity.notFound().build();
     }
 
-    // [source: 16] - Modifica el método delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         ProductoPredisenyado producto = service.findById(id);

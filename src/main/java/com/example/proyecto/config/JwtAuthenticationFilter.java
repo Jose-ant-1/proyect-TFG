@@ -42,12 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // ESTA ES LA LÍNEA CRÍTICA
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception ex) {
-            // Loguea el error real para verlo en la consola de Java
+            // muestra el error real para verlo en la consola
             System.out.println("ERROR AUTH: " + ex.getMessage());
         }
         filterChain.doFilter(request, response);

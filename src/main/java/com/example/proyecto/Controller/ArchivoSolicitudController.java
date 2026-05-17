@@ -67,7 +67,7 @@ public class ArchivoSolicitudController {
             @RequestParam("solicitudId") Integer solicitudId) {
 
         try {
-            // 1. Definir la ruta de la carpeta (puedes usar una ruta absoluta si prefieres)
+            // Definir la ruta de la carpeta
             String carpetaUploads = "/app/data/uploads";
             Path directorioPath = Paths.get(carpetaUploads);
 
@@ -76,14 +76,14 @@ public class ArchivoSolicitudController {
                 Files.createDirectories(directorioPath);
             }
 
-            // 2. Limpiar el nombre del archivo y definir la ruta final
+            // Limpiar el nombre del archivo y definir la ruta final
             String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path rutaFinal = directorioPath.resolve(nombreArchivo);
 
-            // 3. Guardar el archivo físicamente en el disco duro
+            // Guardar el archivo físicamente en el disco duro
             Files.copy(file.getInputStream(), rutaFinal, StandardCopyOption.REPLACE_EXISTING);
 
-            // 4. Guardar la referencia en la base de datos
+            // Guardar la referencia en la base de datos
             ArchivoSolicitud nuevoArchivo = new ArchivoSolicitud();
             nuevoArchivo.setNombreArchivo(file.getOriginalFilename());
             nuevoArchivo.setTipoArchivo(file.getContentType());
@@ -110,25 +110,24 @@ public class ArchivoSolicitudController {
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> descargarArchivo(@PathVariable Integer id, Authentication authentication) {
         try {
-            // 1. Buscamos el registro en la BD
+            // Buscamos el registro en la BD
             ArchivoSolicitud archivoInfo = service.findById(id);
             if (archivoInfo == null) return ResponseEntity.notFound().build();
 
-            // 2. Extraemos info del usuario que hace la petición
+            // Extraemos info del usuario que hace la petición
             String emailUsuarioLogueado = authentication.getName();
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-            // 3. Verificamos la propiedad (Relación: Archivo -> Solicitud -> Usuario -> Email)
-            // Asegúrate de que tu modelo ArchivoSolicitud tenga estas relaciones cargadas
+            // Verificamos la propiedad (Relación: Archivo -> Solicitud -> Usuario -> Email)
             boolean esPropietario = archivoInfo.getSolicitud().getUsuario().getEmail().equals(emailUsuarioLogueado);
 
-            // 4. Bloqueo de seguridad: Si no es Admin Y no es el dueño, lanzamos 403 Forbidden
+            // Bloqueo de seguridad: Si no es Admin Y no es el dueño, lanzamos 403 Forbidden
             if (!isAdmin && !esPropietario) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            // 5. Si pasa la validación, procedemos con la lectura física del archivo
+            // Si pasa la validación, procedemos con la lectura física del archivo
             Path ruta = Paths.get(archivoInfo.getUrl());
             Resource recurso = new UrlResource(ruta.toUri());
 

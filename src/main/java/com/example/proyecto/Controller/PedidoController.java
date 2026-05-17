@@ -34,7 +34,6 @@ public class PedidoController {
         return ResponseEntity.ok(misPedidos);
     }
 
-    // --- MÉTODOS ANTERIORES ACTUALIZADOS ---
 
     @PostMapping
     public ResponseEntity<?> crearPedido(@RequestBody PedidoDTO pedidoDTO, Authentication authentication) {
@@ -43,7 +42,7 @@ public class PedidoController {
             Pedido nuevoPedido = pedidoService.crearDesdeDTO(pedidoDTO, emailUsuario);
             return new ResponseEntity<>(nuevoPedido, HttpStatus.CREATED);
         } catch (Exception e) {
-            // Esto te imprimirá el error real en la respuesta del navegador
+            // Esto imprimirá el error real en la respuesta del navegador
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
@@ -56,10 +55,9 @@ public class PedidoController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable int id, Authentication authentication) {
         try {
-            // 1. Quitamos el .orElse(null) porque buscarPorId ya devuelve un Pedido
             Pedido pedido = pedidoService.buscarPorId(id);
 
-            // 2. Lógica de seguridad (mantenemos lo que tenías)
+            // Lógica de seguridad
             String emailUsuarioLogueado = authentication.getName();
             boolean esAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -73,7 +71,7 @@ public class PedidoController {
                         .body(Map.of("error", "No tienes permiso para ver este pedido"));
             }
         } catch (RuntimeException e) {
-            // 3. Capturamos la excepción que lanza tu service si no encuentra el pedido
+            // Capturamos la excepción que lanza el service si no encuentra el pedido
             return ResponseEntity.notFound().build();
         }
     }
@@ -103,21 +101,19 @@ public class PedidoController {
         }
     }
 
-    // PedidoController.java[cite: 29]
     @PostMapping("/{id}/confirmar-pago")
     public ResponseEntity<?> confirmarPago(@PathVariable int id, Authentication authentication) {
         try {
             Pedido pedido = pedidoService.buscarPorId(id);
             String emailUsuarioLogueado = authentication.getName();
 
-            // SEGURIDAD: Solo el dueño puede activar el pago de su presupuesto[cite: 29]
+            // Solo el dueño puede activar el pago de su presupuesto
             if (!pedido.getUsuario().getEmail().equals(emailUsuarioLogueado)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "No tienes permiso para pagar este pedido"));
             }
 
-            // Pasamos de PRESUPUESTADO a PENDIENTE internamente[cite: 29]
-            // Usamos el método que ya tienes en el service
+            // Pasamos de PRESUPUESTADO a PENDIENTE
             Pedido actualizado = pedidoService.actualizarEstadoYPrecio(id, "PENDIENTE", null);
 
             return ResponseEntity.ok(actualizado);
@@ -160,15 +156,13 @@ public class PedidoController {
         return ResponseEntity.ok().body("{\"mensaje\": \"Reclamación registrada\"}");
     }
 
-    // En PedidoController.java
-
     @PatchMapping("/{id}/actualizar-envio")
     public ResponseEntity<?> actualizarDatosEnvio(@PathVariable int id, @RequestBody Map<String, String> datos, Authentication authentication) {
         try {
             Pedido pedido = pedidoService.buscarPorId(id);
             String emailUsuarioLogueado = authentication.getName();
 
-            // Seguridad: Solo el dueño puede cambiar sus datos de envío
+            // Solo el dueño puede cambiar sus datos de envío
             if (!pedido.getUsuario().getEmail().equals(emailUsuarioLogueado)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -179,7 +173,7 @@ public class PedidoController {
             if (datos.containsKey("codigoPostalEnvio")) pedido.setCodigoPostalEnvio(datos.get("codigoPostalEnvio"));
             if (datos.containsKey("notaCliente")) pedido.setNotaCliente(datos.get("notaCliente"));
 
-            pedidoService.actualizarEstado(id, pedido.getEstado()); // Usamos el save interno
+            pedidoService.actualizarEstado(id, pedido.getEstado());
             return ResponseEntity.ok(pedido);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
