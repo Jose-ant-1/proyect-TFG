@@ -35,8 +35,8 @@ public class SecurityConfig {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
                     corsConfiguration.setAllowedOrigins(java.util.List.of(
                             "http://localhost",
-                            "http://localhost:4200"
-                            //"https://soundtrack-ton-ruled-brick.trycloudflare.com"
+                            "http://localhost:4200",
+                            "https://carter-largest-segments-chest.trycloudflare.com"
                     ));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
