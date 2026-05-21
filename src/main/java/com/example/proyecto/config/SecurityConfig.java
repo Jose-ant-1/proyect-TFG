@@ -36,7 +36,7 @@ public class SecurityConfig {
                     corsConfiguration.setAllowedOrigins(java.util.List.of(
                             "http://localhost",
                             "http://localhost:4200",
-                            "https://carter-largest-segments-chest.trycloudflare.com"
+                            "https://occupied-foundation-thats-commonly.trycloudflare.com"
                     ));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Cache-Control"));
